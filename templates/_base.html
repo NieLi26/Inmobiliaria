@@ -1,0 +1,51 @@
+{% load static %}
+{% load tailwind_tags %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- favicon -->
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
+    <!-- logo -->
+    <link rel="shortcut icon" href="{% static 'img/logo.ico' %}"> 
+    <!-- tailwind -->
+    {% tailwind_css %}
+    <!-- box icon -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+    <title>{% block title %} {% endblock title %}</title>
+
+    {% block head %}
+      
+    {% endblock head %}
+      
+
+  </head>
+  <body class="bg-white justify-center" >    
+
+    <div class="min-w-screen min-h-screen items-center mx-auto ">
+    {% include 'partials/navbar.html' %}
+
+
+    {% include 'partials/messages.html' %}
+
+
+    {% block content %} {% endblock content %}
+    </div>
+ 
+    {% include 'partials/footer.html' %}
+
+
+    <!-- Alpine -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
+
+    <script src="{% static 'js/script.js' %}"></script>
+
+    {% block js %}
+    {% endblock js %}
+
+  </body>
+</html>
