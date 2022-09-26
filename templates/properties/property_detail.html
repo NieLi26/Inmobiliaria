@@ -1,56 +1,136 @@
 {% extends '_base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% block title %} Detalle de Propiedad {% endblock title %}
 
-    
-{% block head %}
-    <!-- Tailwind Elements CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" />
+{% block head %}     
+
+<!-- CDN Owl Carousel BEGIN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" integrity="sha512-sMXtMNL1zRzolHYKEujM2AqCLUR9F2C4/05cdbxjjLSRvMQIciEPCQZo++nk7go3BtSuK9kfa/s+a4f4i5pLkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- CDN Owl Carousel END -->
+
 {% endblock head %}
 
 {% block content %}
-      <!-- Image gallery -->
-      {% include 'partials/properties/carousel.html' %}
+      <!-- BEGIN gallery -->
+    <div class="max-w-2xl mx-auto my-5 px-4 sm:px-6 lg:max-w-4xl ">
+        <div class="  mx-auto lg:max-w-none owl-carousel owl-theme hover:scale-110 ease-in-out transition duration-300 " >
+        {% if property_image.exists %}
+        {% for p in property_image.all %}
+            <img class="md:h-96 w-full object-cover " src="{{p.image.url}}" alt="">
+        {% endfor %}
+        {% else %}
+          <img class="md:h-96 w-full object-cover" src="{% static 'img/1200x700.png' %}" alt="">
+        {% endif %}
+        </div>
+    </div>
+      <!-- END gallery -->
+      
 
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+
+    <div class="max-w-2xl mx-auto my-5 px-4 sm:px-6 lg:max-w-4xl">
+      <!-- <div class="flex flex-wrap ">
+        <div class="w-full p-2 lg:w-1/2">
+            <div class="flex items-center h-full p-4 bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span class="font-medium">4 Beds</span>
+            </div>
+        </div>
+        <div class="w-full p-2 lg:w-1/2">
+            <div class="flex items-center h-full p-4 bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span class="font-medium">Area 550 sqft</span>
+            </div>
+        </div>
+        <div class="w-full p-2 lg:w-1/2">
+            <div class="flex items-center h-full p-4 bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span class="font-medium">Bedroom 6</span>
+            </div>
+        </div>
+        <div class="w-full p-2 lg:w-1/2">
+            <div class="flex items-center h-full p-4 bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span class="font-medium">Kitchen 2</span>
+            </div>
+        </div>
+    </div> -->
 
 
-      <h2 class='text-xl font-extrabold'>Informacion basica</h2>
+      <h2 class='text-xl font-extrabold'>Informacion Básica</h2>
       <p class='border-2 my-2'></p>
-      <p class="text-sm text-gray-600 text-clip mb-4">
-        Superficie útil desde: 57,13 m² <br>
-        Desde: 3 Dormitorios, 1 Baño<br>
-        Dirección: Camino a Tutuquén 2075 , Curicó, Maule<br>
-        Fecha de entrega: Inmediata<br>
-        Inmobiliaria: Inmobiliaria Noval S.A.<br>
-        Construye: Inmobiliaria Noval S.A.<br>
-        Arquitecto: sin información<br>
-        Cantidad de pisos: 4<br>
-        Dividendo estimado: 10 UF/mes | Simular
+      <p class="text-sm text-gray-600 text-clip">
+        {% if property.num_rooms %}
+          Dormitorios: <b>{{ property.num_rooms }}</b><br>
+        {% endif %}
+        {% if property.num_bathrooms %}
+        Baños: <b>{{ property.num_bathrooms }}</b><br>
+        {% endif %}
+        {% if property.builded_surface %}
+        Metros construidos: <b>{{ property.builded_surface }} m²</b><br> 
+        {% endif %}
+        {% if property.property.land_surface %}
+        Superficie terreno: <b>{{ property.property.land_surface }} m²</b><br> 
+        {% endif %}
+        {% if property.num_parkings %}
+        Estacionamientos: <b>{{ property.num_parkings }}</b><br>
+        {% endif %}
+        Fecha publicación: <b>{{ property.created | date:"d-m-Y" }}</b><br>
+        {% comment %} Dividendo estimado: 27,1 UF/mes | Simular  {% endcomment %}
       </p> 
 
-      <h2 class='text-xl font-extrabold mb-4'>Informacion adicional</h2>
+      <h2 class='text-xl font-extrabold mt-4'>Información Adicional</h2>
       <p class='border-2 my-2'></p>
-      <p class="text-sm text-gray-600 text-clip ">       
-      Portal de Tutuquén es un condominio de departamentos desarrollados con todo lo que necesitas para vivir de la mejor manera junto a tu familia, ubicado en un entorno natural, tranquilo y residencial, con movilización a la puerta del proyecto, cercano a comercios, supermercados, y colegios.
-      Este proyecto ofrece áreas verdes con máquinas de ejercicios. En su interior cuenta con cerámica antideslizante, dormitorios alfombrados, cocina con lavaplatos y mueble aéreo, y además cuentan con logia cerrada con lavadero y conexión a lavadora.
+      <p class="text-sm text-gray-600 text-clip break-words pr-2">   
+        {{ property.property.description }}    
       </p> 
-
-      <div class="flex mb-4">
-        {% include 'partials/properties/tab_detail.html' %}
-      </div>
 
 
   </div>
 
+  <div class="max-w-2xl mx-auto my-5 px-4 sm:px-6 lg:max-w-4xl">
 
-  
+    <h2 class='text-xl font-extrabold mt-4 mb-2'>Ubicación</h2>
+    <div class=" bg-gray-300 rounded-lg overflow-hidden flex items-center justify-center relative mx-auto mb-4">
+      <iframe class='w-full' src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3348.242372905776!2d-71.54117718427884!3d-32.94460978092166!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9689dd30432b5057%3A0x752906d8e590807!2sLos%20Ginkos%20760%2C%20Conc%C3%B3n%2C%20Valpara%C3%ADso!5e0!3m2!1ses!2scl!4v1659669098061!5m2!1ses!2scl" width="800" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>    
+    </div>
+  </div>
   
 {% endblock content %}
     
 
 {% block js %}
-<script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+
+  <!-- CDN Jquery BEGIN  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- CDN Jquery END  -->
+
+ <!-- CDN Owl carousel BEGIN  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+ <!-- CDN Owl carousel END  -->
+
+ <!-- Script Owl Carousel BEGIN  -->
+<script>
+  $('.owl-carousel').owlCarousel({
+    loop:true,
+    margin:10,
+    autoplay:true,
+    autoplayTimeout:5000,
+    autoplayHoverPause:true,
+    items:1
+})
+</script>
+ <!-- Script Owl Carousel END  -->
+
 {% endblock js %}
   
 

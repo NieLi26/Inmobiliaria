@@ -1,46 +1,137 @@
 {% extends '_base.html' %}
-{% load crispy_forms_tags %}
-
-{% block title %} Nueva Propiedad {% endblock title %}
-
+<!-- {% load crispy_forms_tags %} -->
 
 {% block content %}
+    
+<div class="max-w-6xl mx-auto py-12 px-6 xl:px-0">
+  <form action="." method="POST" enctype="multipart/form-data" autocomplete="off" class="space-y-4">
+    {% csrf_token %}
+  <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
+    <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">General</h2>
 
-<div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-<div class="w-1/2 space-y-8">
-  <h1>
-    <span class="my-2 block text-3xl text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">Agregar Nueva Propiedad</span>
-  </h1>
-    <form class="mt-8 space-y-6" action="#" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.title| as_crispy_field }}
-        <div class="grid gap-x-8 gap-y-4 grid-cols-2">
-            {{ form.price| as_crispy_field }}  {{ form.uf| as_crispy_field }}
-            {{ form.num_rooms| as_crispy_field }}  {{ form.num_bathrooms| as_crispy_field }}
-            {{ form.num_parkings| as_crispy_field }} {{ form.square_meter| as_crispy_field }}
+    <div class="shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 bg-white sm:p-6">
+        <div class="grid grid-cols-6 gap-6">
+          <!-- <div class="col-span-6 sm:col-span-3"> -->
+            <!-- <label for="property_type" class="block text-sm font-medium text-gray-700">Tipo de propiedad</label> -->
+            {{ form.property_type }}
+          <!-- </div> -->
+
+          <div class="col-span-6 sm:col-span-3">
+            <label for="publish_type" class="block text-sm font-medium text-gray-700">{{ form.publish_type.label }}</label>
+            {{ form.publish_type }}
           </div>
-          {{ form.property_type| as_crispy_field }}
-          {{ form.publish_type| as_crispy_field }}
-          {{ form.address| as_crispy_field }}
-          {{ form.state| as_crispy_field }}
-          {{ form.thumbnail| as_crispy_field }}
-          {{ form.content | as_crispy_field }}
-          {{ form.more_images| as_crispy_field }}
-          <div class="flex space-x-4 justify-center">
-            <a href="{% url 'property_custom' %}" type="button" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-              <svg class="h-5 w-5 text-indigo-500 group-hover:text-danger-400 mr-1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path></svg>
-              Cancelar
-            </a>
-            <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <svg class="h-5 w-5 text-indigo-500 group-hover:text-blue-400 mr-1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="fill: rgba(0, 0, 0, 1);transform: ;msFilter:;"><path d="M5 21h14a2 2 0 0 0 2-2V8l-5-5H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zM7 5h4v2h2V5h2v4H7V5zm0 8h10v6H7v-6z"></path></svg>
-              Guardar Registro
+
+          <div class="col-span-6 sm:col-span-3">
+            <label for="land_surface" class="block text-sm font-medium text-gray-700">{{ form.land_surface.label }}</label>
+            {{ form.land_surface }}
+          </div>
+
+          <div class="col-span-6 sm:col-span-3">
+
+          </div>
+
+
+          <div class="col-span-4">
+            <label for="title" class="block text-sm font-medium text-gray-700">{{ form.title.label }}</label>
+            {{ form.title }}
+          </div>
+
+          <div class="col-span-6">
+            <label for="description" class="block text-sm font-medium text-gray-700">{{ form.description.label }}</label>
+            {{ form.description }}
+          </div>
+
+          <div class="col-span-3 sm:col-start-1 sm:col-end-3">
+            <label for="type_price" class="block text-sm font-medium text-gray-700">{{ form.type_price.label }}</label>
+            {{ form.type_price }}
+          </div>
+
+          <div class="col-span-3 sm:col-end-7 sm:col-span-2">
+            <label for="price" class="block text-sm font-medium text-gray-700">{{ form.price.label }}</label>
+            {{ form.price }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
+    <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Ubicación</h2>
+        <div class="shadow overflow-hidden sm:rounded-md">
+          <div class="px-4 py-5 bg-white sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6 sm:col-span-3">
+                <label for="region" class="block text-sm font-medium text-gray-700"> {{ form.region.label }}</label>
+                {{ form.region }}
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="commune" class="block text-sm font-medium text-gray-700">{{ form.commune.label }}</label>
+                <div id="communes">
+                  {% include 'properties/partials/commune_select.html' %}
+                </div>
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="street_address" class="block text-sm font-medium text-gray-700">{{ form.street_address.label }}</label>
+                {{ form.street_address }}
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="street_number" class="block text-sm font-medium text-gray-700">{{ form.street_number.label }}</label>
+                {{ form.street_number }}
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  {% include 'properties/property_create_extra.html' %}
+
+  <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
+    <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Contacto</h2>
+        <div class="shadow overflow-hidden sm:rounded-md">
+          <div class="px-4 py-5 bg-white sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6  sm:col-span-2">
+                <label for="phone1" class="block text-sm font-medium text-gray-700">{{ form.phone1.label }}</label>
+                {{ form.phone1 }}
+              </div>
+              
+              <div class="col-span-6 sm:col-span-2">
+                <label for="phone2" class="block text-sm font-medium text-gray-700">{{ form.phone2.label }}</label>
+                {{ form.phone2 }}
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
+    <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Imagenes</h2>
+        <div class="shadow overflow-hidden sm:rounded-md">
+          <div class="px-4 py-5 bg-white sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6 ">
+                <label for="thumbnail" class="block text-sm font-medium text-gray-700">{{ form.thumbnail.label }}</label>
+                {{ form.thumbnail }}
+              </div>
+
+              <div class="col-span-6 ">
+                <label for="more_images" class="block text-sm font-medium text-gray-700">{{ form.more_images.label }}</label>
+                {{ form.more_images }}
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Guardar
             </button>
           </div>
-
-      </form>
-        
+        </div>
+  </div>
+  </form>
 </div>
-</div>
-
 {% endblock content %}
-    

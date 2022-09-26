@@ -1,0 +1,209 @@
+<!-- Table  -->
+<table class="min-w-full leading-normal ">
+    <thead>
+        <tr>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Nombre
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Fecha Creación
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Telefono
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Asunto
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Correo
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal">
+                Estado
+            </th>
+            <th scope="col" class="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-center text-sm uppercase font-normal">
+                Mensaje
+            </th>
+        </tr>
+    </thead>
+    <tbody >
+        {% for contact in page_obj %}
+        <tr>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                        {{ contact.name }}
+                </p>
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                    {{ contact.created_date | date:'Y-m-d ' }}
+                </p>
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                        {% if contact.phone == '' %}
+                        ---------
+                        {% else %}
+                        {{ contact.phone }}
+                        {% endif %}
+                </p>
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                    {{ contact.subject }}
+                </p>
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <p class="text-gray-900 whitespace-no-wrap">
+                    {{ contact.from_email }}
+                </p>
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                {% if contact.state == True %}
+                <span class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                    <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full">
+                    </span>
+                    <span class="relative">
+                        Sin leer
+                    </span>
+                </span>
+                {% else %}
+                <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                    <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full">
+                    </span>
+                    <span class="relative">
+                        Leido
+                    </span>
+                </span>
+                {% endif %}
+            </td>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
+                <div x-cloak  x-data="{ open: false }" >
+                    <button type="button">
+                    <svg @click="open = true" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" />
+                    </svg>
+                    </button>
+                    
+                    <div x-show="open"  class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                
+                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                    
+                        <div class="fixed z-10 inset-0 overflow-y-auto">
+                        <div class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
+                            <div @click.away="open = false" class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+                                <div  class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+                                    <div class="modal-header flex flex-shrink-0 items-center justify-center p-4 border-b border-gray-200 rounded-t-md">
+                                    <h5 class="text-xl font-medium leading-normal text-gray-800 " id="exampleModalScrollableLabel">
+                                            Mensaje de
+                                            <span class="inline-block py-1.5 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold {% if contact.state == False %} bg-green-600 {% else %} bg-red-600 {% endif %} text-white rounded-full">
+                                            {{ contact.from_email }}
+                                            </span>
+                                    </h5>
+                                    <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body relative p-4 bg-gray-100">
+                                        <div class="max-w-prose mx-auto break-words">
+                                        <p class="mt-4 text-lg text-black leading-8 ">{{ contact.message }}</p>
+                                        </div>
+                                    </div>
+                                    <!-- <form action="." method='post'> -->
+                                    <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                                    {% if contact.state == True %}
+                                        <button 
+                                        hx-get="{% url 'hx_contact_modal' contact.id page_obj.number %}"
+                                        hx-target='#table-contact'
+                                        hx-swap="innerHTML"
+                                        @click="open = false" 
+                                        class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
+                                        Leido
+                                        </button>
+                                
+                                        <button @click="open = false" type="button" class="ml-2 inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                    {% else %}
+                                        <button @click="open = false" type="button" class="ml-2 inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                    {% endif %}
+                                    </div>
+                                <!-- </form> -->
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <!-- <td>
+                <div id="modal-contact"></div>
+            </td> -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginator BEGIN -->
+{% if 2 in  page_obj.paginator.page_range %}
+    <div class="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
+        <div class="flex items-center">
+
+            {% if page_obj.has_previous %}
+            <a href="?page={{page_obj.previous_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+                <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z">
+                    </path>
+                </svg>
+            </a>
+            {% endif %}
+
+            {% if 4 in page_obj.paginator.page_range %}
+
+                {% if page_obj.number|add:"-1" >= 1 %}
+                <a href="?page={{ page_obj.number|add:"-1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"-1" }}</a> 
+                {% endif %}
+
+                <a href="?page={{ page_obj.number }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ page_obj.number }}</a> 
+
+
+                {% if page_obj.number|add:"1" in page_obj.paginator.page_range %}
+                <a href="?page={{ page_obj.number|add:"1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"1" }}</a> 
+                {% endif %}
+
+            {% else %}
+                {% for i in page_obj.paginator.page_range %}
+                    {% if i == page_obj.number %}
+                    <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ i }}</a> 
+                        {% else %}
+                        <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ i }}</a> 
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+            
+
+            {% if page_obj.has_next %}
+            <a href="?page={{page_obj.next_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+                <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z">
+                    </path>
+                </svg>
+            </a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endif %}
+<!-- Paginator END -->
+
+{% if not page_obj.object_list %}
+<div class="pt-10 pb-16 sm:pt-24 sm:pb-36 lg:pt-40 lg:pb-56 text-center" style="">
+  <svg width="96" height="96" fill="none" class="mx-auto mb-6 text-gray-900">
+    <path d="M36 28.024A18.05 18.05 0 0025.022 39M59.999 28.024A18.05 18.05 0 0170.975 39" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><ellipse cx="37.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><ellipse cx="58.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><path d="M24.673 75.42a9.003 9.003 0 008.879 5.563m-8.88-5.562A8.973 8.973 0 0124 72c0-7.97 9-18 9-18s9 10.03 9 18a9 9 0 01-8.448 8.983m-8.88-5.562C16.919 68.817 12 58.983 12 48c0-19.882 16.118-36 36-36s36 16.118 36 36-16.118 36-36 36a35.877 35.877 0 01-14.448-3.017" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M41.997 71.75A14.94 14.94 0 0148 70.5c2.399 0 4.658.56 6.661 1.556a3 3 0 003.999-4.066 12 12 0 00-10.662-6.49 11.955 11.955 0 00-7.974 3.032c1.11 2.37 1.917 4.876 1.972 7.217z" fill="currentColor"></path>
+  </svg>
+  <p class="text-lg leading-5 font-medium text-gray-900 mb-3">Lo siento! No hay coincidencias con lo que buscas.</p>
+  <!-- <p>Si quieres intenta con otros parametros</a>. -->
+  </p>
+</div>
+{% endif %}
+

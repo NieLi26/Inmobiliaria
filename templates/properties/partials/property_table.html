@@ -1,0 +1,141 @@
+<table class="w-full table-auto mt-2" >
+    <thead>
+        <tr class="border-b text-gray-400 uppercase text-xs leading-normal">
+            <th class="py-3 px-6 text-left">Tipo</th>
+            <th class="py-3 px-6 text-left">Código</th>
+            <th class="py-3 px-6 text-left">Comuna</th>
+            <th class="py-3 px-6 text-center">Valor referencial</th>
+            <th class="py-3 px-6 text-center">Estado</th>
+            <th class="py-3 px-6 text-center">Fecha de publicación</th>
+            <th class="py-3 px-6 text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-gray-600 text-sm font-light">
+        {% for property in page_obj  %}
+        <tr class="border-b border-gray-200 hover:bg-gray-100">
+            <td class="py-3 px-6 text-left whitespace-nowrap">
+                <a href="{{ property.get_absolute_url }}">
+                <div class="flex items-center">
+                    <span class="font-medium">{{ property.get_property_type_display }} {{ property.get_publish_type_display }}</span>
+                </div>
+                </a>
+            </td>
+            <td class="py-3 px-6 text-left">
+                <a href="{{ property.get_absolute_url }}">
+                <div class="flex items-center">
+                    <span>{{ property.uuid }}</span>
+                </div>
+                </a>
+            </td>
+            <td class="py-3 px-6">
+                <a href="{{ property.get_absolute_url }}">
+                <div class="flex items-center ">
+                    <span> {{ property.commune | title }}</span>
+                </div>
+                </a>
+            </td>
+            <td class="py-3 px-6">
+                <a href="{{ property.get_absolute_url }}">
+                <div class="flex items-center justify-center">
+                {% if property.type_price == 'uf' %} UF {{ property.price}} {% else %} $ {{ property.price}} {% endif %}
+                </div>
+                </a>
+            </td>
+            <td class="py-3 px-6 text-center">
+                <a href="{{ property.get_absolute_url }}">
+                {% if property.state == False %}
+                <span class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                    <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full">
+                    </span>
+                    <span class="relative">
+                        Despublicada
+                    </span>
+                </span>
+                {% else %}
+                <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                    <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full">
+                    </span>
+                    <span class="relative">
+                        Publicada
+                    </span>
+                </span>
+                {% endif %}
+                </a>
+            </td>
+            <td class="py-3 px-6 text-center">
+                <a href="{{ property.get_absolute_url }}">
+                <div class="flex items-center justify-center">
+                    {{ property.created_date | date:'Y-m-d '  }}
+                </div>
+                </a>
+            </td>
+            <td class="py-3 px-6 text-center">
+                <div class="flex item-center justify-between">
+                    {% if property.state == False %}
+                        {% include 'properties/partials/button_draft.html' %}
+                    {% else %}
+                        {% include 'properties/partials/button_publish.html' %}
+                    {% endif %}
+                    
+                    {% include 'properties/partials/button_edit.html' %}
+                    {% include 'properties/partials/button_delete.html' %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!-- Paginator BEGIN -->
+{% if 2 in  page_obj.paginator.page_range %}
+    <div class="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
+        <div class="flex items-center">
+
+            {% if page_obj.has_previous %}
+            <a href="?page={{page_obj.previous_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+                <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z">
+                    </path>
+                </svg>
+            </a>
+            {% endif %}
+
+            {% if 4 in page_obj.paginator.page_range %}
+
+                {% if page_obj.number|add:"-1" >= 1 %}
+                <a href="?page={{ page_obj.number|add:"-1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"-1" }}</a> 
+                {% endif %}
+
+                <a href="?page={{ page_obj.number }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ page_obj.number }}</a> 
+
+
+                {% if page_obj.number|add:"1" in page_obj.paginator.page_range %}
+                <a href="?page={{ page_obj.number|add:"1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"1" }}</a> 
+                {% endif %}
+
+            {% else %}
+                {% for i in page_obj.paginator.page_range %}
+                    {% if i == page_obj.number %}
+                    <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ i }}</a> 
+                        {% else %}
+                        <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ i }}</a> 
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+            
+
+            {% if page_obj.has_next %}
+            <a href="?page={{page_obj.next_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+                <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z">
+                    </path>
+                </svg>
+            </a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endif %}
+<!-- Paginator END -->

@@ -53,6 +53,8 @@ THIRD_PARTY_APPS = [
     'crispy_tailwind',
     'tailwind',
     'theme',
+    'django_filters',
+    "django_htmx",
 ]
 
 LOCAL_APPS = [
@@ -68,6 +70,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # Whitenoise
      'whitenoise.middleware.WhiteNoiseMiddleware',
+    # htmx
+    "django_htmx.middleware.HtmxMiddleware",
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -90,6 +94,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.base.context_processors.extra',
             ],
         },
     },
@@ -131,7 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -162,8 +167,8 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-NPM_BIN_PATH = '/usr/bin/npm'
-# NPM_BIN_PATH = r'C:\Program Files\nodejs\npm.cmd' 
+# NPM_BIN_PATH = '/usr/bin/npm'
+NPM_BIN_PATH = r'C:\Program Files\nodejs\npm.cmd' 
 
 # django-crispy-forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"

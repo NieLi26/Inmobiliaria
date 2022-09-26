@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel
+from apps.base.models import TimeStampedModel
 # Create your models here.
 
-class Contact(BaseModel):
+class Contact(TimeStampedModel):
     """Model definition for Contact."""
 
     # TODO: Define fields here

@@ -1,8 +1,9 @@
-{% load notify_template_tags %}
+{% load extra_template_tags %}
 {% load static %}
-<nav x-data="{ open: false }" >
+
+<nav x-data="{ open: false }" class='bg-white shadow-navbar dark:bg-dark-main border-t  border-gray-100 dark:border-dark-second lg:static lg:overflow-y-visible' >
   
-    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 ">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <div class="flex-shrink-0">
@@ -13,31 +14,31 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4 ">
                             
-                <a href="{% url 'home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  px-3 py-2 rounded-md text-sm font-medium" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
+                <a href="{% url 'home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  px-3 py-2 rounded-md text-sm  {% activate_on 'home' %} " x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
 
-                <div x-data="{ open: false }" @keyup.escape="open = false" class="relative inline-block text-left z-10">
+                <div x-cloak  x-data="{ open: false }" @keyup.escape="open = false" class="relative inline-block text-left z-10">
                
-                    <button @click="open = !open" type="button" class="inline-flex justify-center w-full rounded-md px-4 py-2 bg-white text-sm font-medium text-gray-800 hover:text-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                    <button @click="open = !open" type="button" class="inline-flex items-center justify-center w-full rounded-md px-4 py-2 bg-white text-sm  text-gray-800 hover:text-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
                       Propiedades
                       <!-- Heroicon name: solid/chevron-down -->
-                      <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <svg class="h-5 w-5 inline-flex mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                     </button>
           
                     <!-- Dropdown -->
-                  <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                  <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transition duration-600" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                     <div class="py-1" role="none">
                       <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
                       <a href="#" class="text-gray-700 hover:text-white block px-4 py-2 text-sm hover:bg-gray-300" role="menuitem" tabindex="-1" id="menu-item-0">General</a>
-                      <a href="{% url 'house_list' %}" class="text-gray-700 hover:text-white block px-4 py-2 text-sm hover:bg-gray-300" role="menuitem" tabindex="-1" id="menu-item-0">Casas</a>
-                      <a href="{% url 'apartment_list' %}" class="text-gray-700 hover:text-white block px-4 py-2 text-sm hover:bg-gray-300" role="menuitem" tabindex="-1" id="menu-item-1">Departamentos</a>
-                      <!-- <a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">Arriendo</a> -->
+                      <a href="{% url 'house_list' %}" class="text-gray-700 hover:text-white block px-4 py-2 text-sm hover:bg-gray-300 {% activate_on 'house_list' %}" role="menuitem" tabindex="-1" id="menu-item-0">Casas</a>
+                      <a href="{% url 'apartment_list' %}" class="text-gray-700 hover:text-white block px-4 py-2 text-sm hover:bg-gray-300 {% activate_on 'apartment_list' %}" role="menuitem" tabindex="-1" id="menu-item-1">Departamentos</a>
+                      <!-- <a href="#" class="text-gray-700 block px-4 py-2 text-lg" role="menuitem" tabindex="-1" id="menu-item-2">Arriendo</a> -->
                     </div>
                   </div>
                 </div>
                                             
-                <a href="{% url 'contact' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
+                <a href="{% url 'contact' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm {% activate_on 'contact' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
               
             </div>
           </div>
@@ -45,55 +46,61 @@
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             {% if user.is_authenticated %}
-              <!-- Notification -->
-            <div x-data="{ open: false }" class="ml-3 relative z-10">
-              {% comment %} <div class="absolute inline-block top-2 right-2 bottom-auto left-auto translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 p-1 text-xs bg-pink-700 rounded-full z-10">99</div>  {% endcomment %}
-              <div class="absolute inline-block top-0 right-0 bottom-auto left-auto translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 py-1 px-2.5 text-xs leading-none text-center whitespace-nowrap align-baseline font-bold bg-indigo-700 text-white rounded-full z-10">{% contact_state_count %}</div>              
-              <button @click="open = true" type="button" class="p-1 rounded-full text-gray-800  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset focus:ring-black ">
-                <span class="sr-only">View notifications</span>
-                <svg class="h-7 w-7" x-description="Heroicon name: outline/bell" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              <!-- Crear propiedad -->
+              <a href="{% url 'property_select' %}" type="button" class="inline-flex items-center px-3 py-2 border border-green-300 rounded-full shadow-sm text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ">
+                <p class="text-base">Publicar</p>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                </button>
-                <div x-show="open"  @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state." x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()" style="display: none;">
-                                    
-                <a href="{% url 'contact_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1" id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Ver notificaciones</a>
+              </a> 
+              <!-- Notification -->
+              <div x-data="{ open: false }" class="ml-3 relative z-10">
+                {% include 'partials/contact_notify.html' %}
                 
-               
-              
-            </div>
-
-            </div>
-            {% comment %} Perfil {% endcomment %}
-            <div @keydown.escape.stop="open = false;" class="ml-6 relative z-10">
-              <div>
-                <button @click="open = true" type="button" class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" x-ref="button" @click="onButtonClick()" @keyup.space.prevent="onButtonEnter()" @keydown.enter.prevent="onButtonEnter()" aria-expanded="false" aria-haspopup="true" x-bind:aria-expanded="open.toString()" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()">
-                  <span class="sr-only">Open user menu</span>
-                  <img class="h-7 w-7 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" alt="">
-                </button>
+                <button @click="open = true" type="button" class="p-1 rounded-full text-gray-800  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset focus:ring-black ">
+                  <span class="sr-only">View notifications</span>
+                  <svg class="h-7 w-7" x-description="Heroicon name: outline/bell" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                  </svg>
+                  </button>
+                  <div x-show="open"  @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state." x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()" style="display: none;">
+                                      
+                  <a href="{% url 'contact_list' %}" class="block px-4 py-2 text-lg text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1" id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Ver notificaciones</a>
               </div>
-              
-                <div x-show="open"  @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state." x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()" style="display: none;">
-                                    
-                    <a href="{% url 'contact_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1" id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Contactos</a>
-                    
-                    <a href="{% url 'property_custom' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1" id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Configuración</a>
-                  
-                    <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 2 }" role="menuitem" tabindex="-1" id="user-menu-item-2" @mouseenter="activeIndex = 2" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Cerrar Sesión</a>
-                  
+
+              </div>
+              <!-- Perfil -->
+              <div @keydown.escape.stop="open = false;" class="ml-6 relative z-10">
+                <div>
+                  <button @click="open = true" type="button" class="max-w-xs bg-white rounded-full flex items-center text-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" x-ref="button" @click="onButtonClick()" @keyup.space.prevent="onButtonEnter()" @keydown.enter.prevent="onButtonEnter()" aria-expanded="false" aria-haspopup="true" x-bind:aria-expanded="open.toString()" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()">
+                    <span class="sr-only">Open user menu</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
                 </div>
-              
-            </div>
+                
+                  <div x-show="open"  @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state." x-bind:aria-activedescendant="activeDescendant" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()" style="display: none;">
+                                      
+                      <a href="{% url 'contact_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300 {% activate_on 'contact_list' %}" >Contactos</a>
+                      
+                      <a href="{% url 'property_custom' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300 {% activate_on 'property_custom' %}" :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1" id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Configuración</a>
+                    
+                      <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300" :class="{ 'bg-gray-100': activeIndex === 2 }" role="menuitem" tabindex="-1" id="user-menu-item-2" @mouseenter="activeIndex = 2" @mouseleave="activeIndex = -1" @click="open = false; focusButton()">Cerrar Sesión</a>
+                    
+                  </div>
+                
+              </div>
             {% else %}
-            <a href="{% url 'login' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  px-3 py-2 rounded-md text-sm font-medium">
-                Log In
-            </a>
+              <a href="{% url 'login' %}" class="text-white bg-purple-700 hover:bg-purple-600  px-3 py-2 rounded-full shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400">
+                  Iniciar sesión
+              </a>
             {% endif %}
         </div>
         </div>
         <div class="-mr-2 flex md:hidden">
           <!-- Mobile menu button -->
-          <button type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" aria-controls="mobile-menu" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
+          <button type="button" class="bg-purple-700 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-500 focus:ring-white" aria-controls="mobile-menu" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
             <span class="sr-only">Open main menu</span>
             <svg x-state:on="Menu open" x-state:off="Menu closed" class="h-6 w-6 block" :class="{ 'hidden': open, 'block': !(open) }" x-description="Heroicon name: outline/menu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -106,25 +113,66 @@
       </div>
     </div>
 
+    <!-- Mobile BEGIN -->
     <div x-description="Mobile menu, show/hide based on menu state." class="md:hidden" id="mobile-menu" x-show="open" style="display: none;">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 
-          <a href="{% url 'home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
+          <a href="{% url 'home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium {% activate_on 'home' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
         
-          <a href="#" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Propiedades</a>
+          <div x-data="{ open: false }">
+            <button  @click="open = !open" class="flex items-center text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium transition-all" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">
+              Propiedades
+              <svg class="h-5 w-5 inline-flex mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div x-show="open" class="ml-2">
+
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+                <a href="{% url 'house_list' %}" class="text-gray-700 hover:text-white block px-2 py-2 text-sm hover:bg-gray-300 {% activate_on 'house_list' %}" role="menuitem" tabindex="-1" id="menu-item-0">Casas</a>
+              </div>
+
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              <a href="{% url 'apartment_list' %}" class="text-gray-700 hover:text-white block px-2 py-2 text-sm hover:bg-gray-300 {% activate_on 'apartment_list' %}" role="menuitem" tabindex="-1" id="menu-item-1">Departamentos</a>
+              </div>
+            </div>
+          </div>
         
-          <a href="{% url 'contact' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
+          
+          <a href="{% url 'contact' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium {% activate_on 'contact' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
                 
       </div>
+      
       <div class="pt-4 pb-3 border-t border-gray-700">
         {% if user.is_authenticated %}
-        <div class="flex items-center px-5">
+        <div class="mt-3 px-2 space-y-1">
+          <a href="{% url 'property_select' %}" type="button" class="inline-flex items-center px-3 py-2 border border-green-300 rounded-full shadow-sm text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ">
+            <p class="text-base">Publicar</p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </a>
+        </div>
+ 
+        <div class="flex items-center px-5 mt-3">
           <div class="flex-shrink-0">
-            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" alt="">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 ">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </div>
           <div class="ml-3">
-            <div class="text-base font-medium leading-none text-white">Tom Cook</div>
-            <div class="text-sm font-medium leading-none text-gray-400">tom@example.com</div>
+            {% if request.user.is_authenticated %}
+            <div class="text-lg font-medium leading-none text-gray-400">{{ request.user.email }}</div>
+            {% else %}
+            <div class="text-lg font-medium leading-none text-gray-400">tom@example.com</div>
+            {% endif %}
           </div>
           <!-- <button type="button" class="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
             <span class="sr-only">View notifications</span>
@@ -136,20 +184,23 @@
         <div class="mt-3 px-2 space-y-1">
           
           
-            <a href="{% url 'property_custom' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-gray-700">Configuración</a>
+            <a href="{% url 'property_custom' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-gray-700 {% activate_on 'property_custom' %}">Configuración</a>
           
             <a href="{% url 'logout' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-gray-700">Cerrar Sesión</a>
           
         </div>
         {% else %}
         <div class="mt-3 px-2 space-y-1">          
-            <a href="{% url 'login' %}" class=" whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">Log In</a>
+          <a href="{% url 'login' %}" class="text-white bg-purple-700 hover:bg-purple-600  px-3 py-2 rounded-full text-sm font-semibold ">
+            Iniciar sesión
+        </a>
         </div>
         {% endif %}
     </div>
  
 
     </div>
-  </nav>
+    <!-- Mobile END -->
+</nav>
 
 

@@ -1,0 +1,48 @@
+    <!-- Paginator BEGIN  -->
+    {% if 2 in  page_obj.paginator.page_range %}
+    <div class="container flex justify-center mx-auto mt-8">
+        <ul class="flex">
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{page_obj.previous_page_number}}" class="bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">Prev</a>
+            </li>
+            {% endif %}
+
+            <!-- Paginacion con rango de 3 -->
+            {% if 4 in page_obj.paginator.page_range %}
+                {% if page_obj.number|add:"-1" >= 1 %}
+                    <li ><a href="?page={{ page_obj.number|add:"-1" }}" class="bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium" >{{ page_obj.number|add:"-1" }}</a> </li>
+                {% endif %}
+                
+                <li ><a href="?page={{ page_obj.number }}" class="z-10 bg-blue-700 border-blue-500 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium" >{{ page_obj.number }}</a> </li>
+                
+                {% if page_obj.number|add:"1" in page_obj.paginator.page_range %}
+                    <li ><a href="?page={{ page_obj.number|add:"1" }}" class="bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium" >{{ page_obj.number|add:"1" }}</a> </li>
+                {% endif %}
+            {% else %}
+                {% for i in page_obj.paginator.page_range %}
+                    {% if i == page_obj.number %}
+                        <li ><a href="?page={{ i }}" class="bg-blue-700 border-blue-500 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium" >{{ i }}</a> </li>
+                        {% else %}
+                        <li><a href="?page={{ i }}" class="bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ i }}</a> </li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <!-- Paginacion normal -->
+            <!-- {% for i in page_obj.paginator.page_range %}
+            {% if i == page_obj.number %}
+            <li ><a href="?page={{ i }}" class="z-10 bg-blue-700 border-blue-500 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium" >{{ i }}</a> </li>
+            {% else %}
+            <li><a href="?page={{ i }}" class="z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ i }}</a> </li>
+            {% endif %}
+            {% endfor %}   -->
+           
+            {% if page_obj.has_next %}
+            <li><a href="?page={{page_obj.next_page_number}}" class="bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">Next</a>
+            </li>
+            {% endif %}
+            
+        </ul>
+    </div>
+    {% endif %}
+    <!-- Paginator END -->

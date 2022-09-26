@@ -1,0 +1,11 @@
+<select name="commune" id="id_commune" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required autocomplete="off">
+    <option value="" >---------</option>
+    {% for commune in communes %}
+        {% if commune == commune_selected %}
+            <option value="{{ commune.id }}" selected>{{ commune.name }}</option>
+        {% else %}
+            <option value="{{ commune.id }}">{{ commune.name }}</option>
+        {% endif %}
+    {% endfor %}
+</select> 
+

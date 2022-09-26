@@ -1,0 +1,194 @@
+<div 
+        x-data=
+        "{
+            openTab: 1,
+            activeClasses:'px-4 py-2 -mb-px font-semibold text-indigo-700 border-b-2 border-indigo-700 rounded-t',
+            inactiveClasses:'px-4 py-2 font-semibold text-indigo-500 rounded-t opacity-50 ',
+            underlineActive: 'border-blue-400 border-b-4 -mb-px opacity-100',
+            underlineInactive: ''
+        }">
+    
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <!-- Current: "border-blue-500 text-blue-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
+                    <button @click="openTab = 1" :class="openTab === 1 ? activeClasses : inactiveClasses">
+                    Publicadas
+                    <span aria-hidden="true" :class="openTab === 1 ? underlineActive : underlineInactive"></span>
+                    </button>
+    
+                    <button @click="openTab = 2" :class="openTab === 2 ? activeClasses : inactiveClasses">
+                    Despublicadas
+                    <span aria-hidden="true" :class="openTab === 2 ? underlineActive : underlineInactive"></span>
+                    </button>
+<!--     
+                    <button @click="openTab = 3" :class="openTab === 3 ? activeClasses : inactiveClasses">
+                    Team Members
+                    <span aria-hidden="true" :class="openTab === 3 ? underlineActive : underlineInactive"></span>
+                    </button>
+    
+                    <button @click="openTab = 4" :class="openTab === 4 ? activeClasses : inactiveClasses">
+                    Billing
+                    <span aria-hidden="true" :class="openTab === 4 ? underlineActive : underlineInactive"></span>
+                    </button> -->
+                </nav>
+            </div>
+     
+            <div x-show="openTab === 1" class="mt-2" >
+                <table class="min-w-max w-full table-auto " >
+                    <thead>
+                        <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Tipo</th>
+                            <th class="py-3 px-6 text-left">Código</th>
+                            <th class="py-3 px-6 text-left">Comuna</th>
+                            <th class="py-3 px-6 text-center">Valor referencial</th>
+                            <th class="py-3 px-6 text-center">Estado</th>
+                            <th class="py-3 px-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 text-sm font-light">
+                        {% for property in property_list_publish  %}
+                        <tr class="border-b border-gray-200 hover:bg-gray-100">
+                            <td class="py-3 px-6 text-left whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <span class="font-medium">{{ property.get_property_type_display }} {{ property.get_publish_type_display }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-left">
+                                <div class="flex items-center">
+                                    <span>{{ property.uuid }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-left">
+                                <div class="flex items-center ">
+                                    <span> {{ property.commune | title }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                {% if property.type_price == 'uf' %} UF {{ property.price}} {% else %} $ {{ property.price}} {% endif %}
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <span class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full">
+                                    </span>
+                                    <span class="relative">
+                                        Publicada
+                                    </span>
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <div class="flex item-center justify-center space-x-1">
+                                    {% include 'properties/partials/button_publish.html' %}
+                                    {% include 'properties/partials/button_edit.html' %}
+                                    {% include 'properties/partials/button_delete.html' %}
+                                    <a href="{{ property.get_absolute_url }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                            <path d="M9 17h6"></path>
+                                            <path d="M9 13h6"></path>
+                                         </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if  not property_list_publish %}
+                    <div class="pt-10 pb-16 sm:pt-24 sm:pb-36 lg:pt-40 lg:pb-56 text-center" style="">
+                        <svg width="96" height="96" fill="none" class="mx-auto mb-6 text-gray-900">
+                        <path d="M36 28.024A18.05 18.05 0 0025.022 39M59.999 28.024A18.05 18.05 0 0170.975 39" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><ellipse cx="37.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><ellipse cx="58.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><path d="M24.673 75.42a9.003 9.003 0 008.879 5.563m-8.88-5.562A8.973 8.973 0 0124 72c0-7.97 9-18 9-18s9 10.03 9 18a9 9 0 01-8.448 8.983m-8.88-5.562C16.919 68.817 12 58.983 12 48c0-19.882 16.118-36 36-36s36 16.118 36 36-16.118 36-36 36a35.877 35.877 0 01-14.448-3.017" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M41.997 71.75A14.94 14.94 0 0148 70.5c2.399 0 4.658.56 6.661 1.556a3 3 0 003.999-4.066 12 12 0 00-10.662-6.49 11.955 11.955 0 00-7.974 3.032c1.11 2.37 1.917 4.876 1.972 7.217z" fill="currentColor"></path>
+                        </svg>
+                        <p class="text-lg leading-5 font-medium text-gray-900 mb-3">Lo siento! No hay coincidencias con lo que buscas.</p>
+                        <!-- <p>Si quieres intenta con otros parametros</a>. -->
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+    
+            <div x-show="openTab === 2" class="mt-2" >
+                <table class="min-w-max w-full table-auto " >
+                    <thead>
+                        <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Tipo</th>
+                            <th class="py-3 px-6 text-left">Código</th>
+                            <th class="py-3 px-6 text-left">Comuna</th>
+                            <th class="py-3 px-6 text-center">Valor referencial</th>
+                            <th class="py-3 px-6 text-center">Estado</th>
+                            <th class="py-3 px-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 text-sm font-light">
+                        {% for property in property_list_draft  %}
+                        <tr class="border-b border-gray-200 hover:bg-gray-100">
+                            <td class="py-3 px-6 text-left whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <span class="font-medium">{{ property.get_property_type_display }} {{ property.get_publish_type_display }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-left">
+                                <div class="flex items-center">
+                                    <span>{{ property.uuid }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-left">
+                                <div class="flex items-center ">
+                                    <span> {{ property.commune | title }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                {% if property.type_price == 'uf' %} UF {{ property.price}} {% else %} $ {{ property.price}} {% endif %}
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <span class="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full">
+                                    </span>
+                                    <span class="relative">
+                                        Despublicada
+                                    </span>
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <div class="flex item-center justify-center space-x-1">
+                                    {% include 'properties/partials/button_draft.html' %}
+                                    {% include 'properties/partials/button_edit.html' %}
+                                    {% include 'properties/partials/button_delete.html' %}
+                                    <a href="{{ property.get_absolute_url }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                            <path d="M9 17h6"></path>
+                                            <path d="M9 13h6"></path>
+                                         </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if  not property_list_draft %}
+                    <div class="pt-10 pb-16 sm:pt-24 sm:pb-36 lg:pt-40 lg:pb-56 text-center" style="">
+                        <svg width="96" height="96" fill="none" class="mx-auto mb-6 text-gray-900">
+                        <path d="M36 28.024A18.05 18.05 0 0025.022 39M59.999 28.024A18.05 18.05 0 0170.975 39" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><ellipse cx="37.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><ellipse cx="58.5" cy="43.5" rx="4.5" ry="7.5" fill="currentColor"></ellipse><path d="M24.673 75.42a9.003 9.003 0 008.879 5.563m-8.88-5.562A8.973 8.973 0 0124 72c0-7.97 9-18 9-18s9 10.03 9 18a9 9 0 01-8.448 8.983m-8.88-5.562C16.919 68.817 12 58.983 12 48c0-19.882 16.118-36 36-36s36 16.118 36 36-16.118 36-36 36a35.877 35.877 0 01-14.448-3.017" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M41.997 71.75A14.94 14.94 0 0148 70.5c2.399 0 4.658.56 6.661 1.556a3 3 0 003.999-4.066 12 12 0 00-10.662-6.49 11.955 11.955 0 00-7.974 3.032c1.11 2.37 1.917 4.876 1.972 7.217z" fill="currentColor"></path>
+                        </svg>
+                        <p class="text-lg leading-5 font-medium text-gray-900 mb-3">Lo siento! No hay coincidencias con lo que buscas.</p>
+                        <!-- <p>Si quieres intenta con otros parametros</a>. -->
+                        </p>
+                    </div>
+                {% endif %}
+
+            </div>
+<!--     
+            <div x-show="openTab === 3">
+            Tes3
+            </div>
+    
+            <div x-show="openTab === 4">
+            Test4
+            </div> -->
+    
+    
+</div>

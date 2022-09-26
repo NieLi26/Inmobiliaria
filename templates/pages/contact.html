@@ -5,48 +5,46 @@
 
 
 {% block content %}
+<div class=""><div class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8"><div class="text-center"><div class="text-center"><h2 class="text-4xl tracking-tight font-gilroy-bold text-gray-900 sm:text-5xl ">Contactanos</h2><p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4 font-gilroy-medium">Manténgase en contacto con nosotros!</p></div></div></div></div>
+
+<!-- <div id="message-form">
+
+</div> -->
+
 <section class="text-gray-600  body-font ">
   <div class="container py-5 mx-auto">
-    <div class="flex flex-col text-center w-full mb-12">
-      <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Contáctanos</h1>
-      <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Manténgase en contacto con nosotros.</p>
-    </div>
-    <div class="lg:w-1/2 md:w-2/3 mx-auto">
-      <!-- Form Contact -->
-      <form method="post">
+    <div class="lg:w-1/2 md:w-2/3 mx-auto ">
+      <!-- Form Contact BEGIN -->
+      <form action="." method="post" class="flex flex-wrap">
         {% csrf_token %}
-      <div class="flex flex-wrap -m-2">
-          <div class="p-2 w-1/2">
-            <div class="relative">
-              {{ form.name | as_crispy_field }}
-            </div>
-          </div>
-          <div class="p-2 w-1/2">
-            <div class="relative">
-              {{ form.phone | as_crispy_field }}
-            </div>
-          </div>
-          <div class="p-2 w-1/2">
-            <div class="relative">
-              {{ form.from_email | as_crispy_field }}
-            </div>
-          </div>
-          <div class="p-2 w-1/2">
-            <div class="relative">
-              {{ form.subject | as_crispy_field }}
-            </div>
-          </div>
-          <div class="p-2 w-full">
-            <div class="relative">
-              {{ form.message | as_crispy_field }}
-            </div>
-          </div>
-          <div class="p-2 w-full">
-            <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Enviar</button>
-          </div>
-      </div>
+        <div class="md:w-1/2 w-full px-2">
+            {{ form.name | as_crispy_field }}
+        </div>
+
+        <div class="md:w-1/2 w-full px-2">
+            {{ form.phone | as_crispy_field }}
+        </div>
+
+        <div class="md:w-1/2 w-full px-2">
+            {{ form.from_email | as_crispy_field }}
+        </div>
+
+        <div class="md:w-1/2 w-full px-2">
+            {{ form.subject | as_crispy_field }}
+        </div>
+
+        <div class="w-full px-2">
+            {{ form.message | as_crispy_field }}
+        </div>
+
+        <div class="w-full">
+        <button type="submit" class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Enviar</button>
+        </div>
       </form>
-      <!-- Additional Information -->
+
+      <!-- Form Contact END -->
+
+      <!-- Additional Information BEGIN -->
       <div class="p-2 w-full pt-8  my-10 border-t border-gray-300 text-center">
         <p ><b>Dirección:</b> </p>
         <p class="leading-normal mb-5">New York, NY 10012, US </p>
@@ -55,9 +53,12 @@
 
         <p class="mt-5"><b>Teléfono:</b> </p>
         <p class="leading-normal mb-5">+56 923 232 323</p>
-      </div>
+      </div>  
+      <!-- Additional Information END -->
     </div>
   </div>
 </section>
+
+
 {% endblock content %}
     
