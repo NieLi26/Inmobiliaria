@@ -330,9 +330,21 @@ def property_detail(request, publish_type, property_type, location_slug, slug, u
 # CREATE 
 def property_create(request, property_type):
     form = PropertyForm(request.POST or None, request.FILES or None, initial={'property_type': property_type})
-    communes = Commune.objects.filter(region=request.POST['region'])
-    # print(request.POST)
-    commune_select = communes.get(id=request.POST['commune'])
+    print(request.POST)
+    communes = Commune.objects.all()
+    commune = ''
+    disabled = True
+
+    if request.POST.get('region'):
+        communes = communes.filter(region=request.POST.get('region'))
+
+
+    if request.POST.get('commune'):
+        commune = communes.get(id=request.POST.get('commune'))
+        disabled = False
+
+
+
     if property_type == 'ca':
         form_extra = HouseForm(request.POST or None)
     elif property_type == 'de':
@@ -364,8 +376,8 @@ def property_create(request, property_type):
         'form': form,
         'form_extra': form_extra,
         'communes': communes,
-        'commune_selected': commune_select
-        # 'disabled': True,
+        'commune_selected': commune,
+        'disabled': disabled,
     }
     return render(request, 'properties/property_create.html', context)
 
@@ -373,8 +385,18 @@ def property_create(request, property_type):
 def property_update(request, slug, uuid):
     property = Property.objects.get(uuid=uuid, slug=slug)
     form = PropertyForm(request.POST or None, request.FILES or None, instance=property)
+
     communes = Commune.objects.all()
-    commune = property.commune
+
+    if request.POST.get('region'):
+        communes = communes.filter(region=request.POST.get('region'))
+    else:
+        communes = communes.filter(region=property.region)
+
+    if request.POST.get('commune'):
+        commune = communes.get(id=request.POST.get('commune'))
+    else:
+        commune = property.commune
 
     if property.property_type == 'ca':
         house = House.objects.get(property=property)

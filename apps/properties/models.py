@@ -8,10 +8,10 @@ from django.urls import reverse
 from apps.base.models import TimeStampedModel
 
 def property_directory_path(instance,filename):
-    return 'property/{0}/{1}'.format(instance.street_address, filename)
+    return 'property/{0}/{1}'.format(instance.uuid, filename)
 
 def property_images_directory_path(instance,filename):
-    return 'property_images/{0}/{1}'.format(instance.property.street_address, filename)
+    return 'property_images/{0}/{1}'.format(instance.property.uuid, filename)
 
 class Property(TimeStampedModel):
     '''Model definition for Property.'''

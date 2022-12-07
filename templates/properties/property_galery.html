@@ -21,26 +21,6 @@
  {% endif %}
  </div>
 
-{% if property_images %}
-<!-- <div class="bg-white">
-  <div class="mx-auto py-16 px-4 overflow-hidden sm:py-24 sm:px-6 lg:px-8">
-    <div class="relative w-full flex gap-4 py-6 flex-wrap" id="template-test">
-      {% for property_image in property_images %}
-      <img class="h-48 aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="{{ property_image.image.url }}" alt="Image 1" data-dz-remove>
-      {% endfor %}
-    </div>
-  </div>
-</div> -->
-
-<!-- <div class="flex items-center flex-wrap" id="template-test">
-  {% for property_image in property_images %}
-  <div class="md:w-1/3 xl:w-1/4 hover:scale-110 ease-in-out transition duration-300 p-6 dz-preview dz-success dz-complete dz-image-preview" >
-      <img class="h-72 object-contain " src="{{ property_image.image.url }}" alt="">
-  </div>
-  {% endfor %}
-</div> -->
-
-{% endif %}
 
 
 <input type="hidden" id="id_property" value="{{ property.id }}">
@@ -70,31 +50,9 @@
     <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3" id="template-test">
       {% for property_image in property_images %}
       <div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">
-        <!-- <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-10 w-10 text-pink-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M12 14l9-5-9-5-9 5 9 5z" />
-          <path
-            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-          />
-        </svg> -->
-    <img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="{{ property_image.image.url }}" alt="Image 1" data-dz-remove>
-    <!-- <h2 class="mt-4 text-xl font-bold text-gray-700">Digital campaigns</h2>
 
-    <p class="mt-1 text-sm text-gray-700">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ut quo
-      possimus adipisci distinctio alias voluptatum blanditiis laudantium.
-    </p> -->
+    <img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="{{ property_image.image.url }}" alt="Image 1" data-dz-remove>
+
     </div>
     {% endfor %}
     </div>
@@ -134,7 +92,11 @@
 {% block js %}
 
 <script >
-
+console.log(location.host);
+console.log(location.hostname);
+console.log(location.pathname);
+console.log(location.protocol);
+console.log(document.domain);
  Dropzone.autoDiscover = false;
 
 
@@ -148,7 +110,7 @@
 
         init: function(){
           const galeria = document.querySelectorAll('.galeria');
-           const dominio ='http://localhost:8000'
+          //  const dominio ='http://localhost:8000'
             if(galeria.length > 0 ) {
                 galeria.forEach(imagen => {
                     const imagenPublicada = {};
@@ -157,7 +119,7 @@
                     imagenPublicada.id = imagen.id;
                 
                     this.options.addedfile.call(this, imagenPublicada);
-                    this.options.thumbnail.call(this, imagenPublicada, `${dominio}/media/${imagenPublicada.name}`);
+                    this.options.thumbnail.call(this, imagenPublicada, `${location.protocol}//${location.host}/media/${imagenPublicada.name}`);
   
                     imagenPublicada.previewElement.classList.add('dz-success');
                     imagenPublicada.previewElement.classList.add('dz-complete');
@@ -218,7 +180,7 @@
          
       
           this.options.addedfile.call(this, imagenPublicada);
-          this.options.thumbnail.call(this, imagenPublicada, `${dominio}/media/${imagenPublicada.name}`);
+          this.options.thumbnail.call(this, imagenPublicada, `${location.protocol}//${location.host}/media/${imagenPublicada.name}`);
 
           imagenPublicada.previewElement.classList.add('dz-success');
           imagenPublicada.previewElement.classList.add('dz-complete');
@@ -226,7 +188,7 @@
           let html = ''
           for(const i of data.preview_images) {
             html += '<div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">'
-            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${dominio}/${i.image}" alt="Image 1" data-dz-remove>`
+            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${location.protocol}//${location.host}/${i.image}" alt="Image 1" data-dz-remove>`
             html += '</div>'
           }
         
@@ -272,7 +234,7 @@
           let html = ''
           for(const i of data.preview_images) {
             html += '<div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">'
-            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${dominio}/${i.image}" alt="Image 1" data-dz-remove>`
+            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${location.protocol}//${location.host}/${i.image}" alt="Image 1" data-dz-remove>`
             html += '</div>'
           }
         
