@@ -4,7 +4,7 @@
 
 ### Migrate and Migrations
 
-Crear la estructura de los `modelos`
+Crear la estructura de los `models`
 
 ```bash
 $ python manage.py makemigrations
