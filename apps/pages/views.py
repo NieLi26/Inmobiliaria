@@ -1,58 +1,146 @@
-from ast import Try
-from multiprocessing import context
-from xml.dom import ValidationErr
+import json
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, FormView, View
+from django.views.generic import View
 from django.core.mail import send_mail, BadHeaderError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import TemplateView, ListView, View
+
+# email
+from django.template import loader
+from django.core.mail import EmailMultiAlternatives
+
 #cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
-from .forms import ContactForm
-from .models import Contact
-from apps.properties.models import House, Apartment
+from .forms import ContactForm, OwnerContactForm
+from .models import Contact, OwnerContact
+from apps.properties.models import Commune, House, Apartment, PropertyImage, Property
 
 # Create your views here.
 
+## -------------------------------------------------------------------------------------------------------------------------
+#                                                        CBV
+## -------------------------------------------------------------------------------------------------------------------------
+
+class TestTemplateView(TemplateView):
+    template_name = 'test.html'
+
+    # def get(self, request, *args, **kwargs):
+
+    #     property_images = PropertyImage.objects.filter(property__id=1)
+    #     for i in property_images:
+    #         print(i.image)
+    #     return super().get(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        data = dict()
+        try:
+            action = json.loads(request.body)['action']
+            if action == 'delete':
+                imagen = json.loads(request.body)['imagen']
+                property_image = PropertyImage.objects.get(image=imagen)
+                property_image.delete()
+            else:
+                data['error']  = 'Ha ocurrido un error'
+        except Exception as e:
+            print(str(e))
+            data['error'] = str(e)
+        return JsonResponse(data)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        property = Property.objects.get(id=1)
+        property_images = PropertyImage.objects.filter(property__id=1)
+        context['property_images'] =  property_images
+        context['property'] =  property
+        return context
+
+
+# @method_decorator(never_cache, name='dispatch')
 class HomePageView(View):
     def get(self, request, *args, **kwargs):
-        houses = House.objects.filter(state=True, property__publish_type='ve')[0:20]
-        apartments = Apartment.objects.filter(state=True, property__publish_type='ve')[0:20]
+
+        houses = House.objects.filter(state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+        apartments = Apartment.objects.filter(state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+
+        form = OwnerContactForm()
+        context = {
+           'house_list': houses,
+           'apartment_list': apartments,
+           'form': form,
+        }
+        return render(request, 'pages/home.html', context)
+
+    def post(self, request, *args, **kwargs):
+        houses = House.objects.filter(property__state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+        apartments = Apartment.objects.filter(property__state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+
+        publish_type = request.POST.get('q_publish', '')
+        property_type = request.POST.get('q_property', '')
+        search_location = request.POST.get('search_location', '')
+
+        if publish_type != '' and property_type !='' :
+            if search_location != '':
+                communes = Commune.objects.all()
+                location_slug = [commune for commune in communes if commune.get_commune_region() == search_location]
+                if location_slug:
+                    location_slug = location_slug[0]
+                    location_slug= location_slug.location_slug
+                else:
+                    return redirect(reverse('properties:custom_list_publish_property', kwargs={
+                        'publish_type':publish_type,
+                        'property_type':property_type,
+                    }))
+                # location_slug = Property.objects.filter(commune=location_slug)[0]
+                # try :
+                # except:
+                #     return redirect(reverse('custom_list_region_commune', args=[publish_type, property_type]))
+                return redirect(reverse('properties:custom_list', kwargs={
+                    'publish_type':publish_type,
+                    'property_type':property_type,
+                    'location_slug':location_slug
+                }))
+            else:
+                return redirect(reverse('properties:custom_list_publish_property', kwargs={
+                    'first_data':publish_type,
+                    'second_data':property_type,
+                }))
+
         context = {
            'house_list': houses,
            'apartment_list': apartments,
         }
+
         return render(request, 'pages/home.html', context)
 
 @method_decorator(never_cache, name='dispatch')
-class ContactPageView(SuccessMessageMixin, View):
+class ContactPageView(View):
     def get(self, request, *args, **kwargs):
         form = ContactForm()
         context = {
             'form': form
         }
-        return render(request, 'pages/contact.html', context)
+        return render(request, 'pages/contact_create.html', context)
     
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Mensaje enviado correctamente")    
-            return redirect('contact')
-        return render(request, 'pages/contact.html', {'form': form})
+            messages.success(request, "Mensaje enviado correctamente")  
+            response = render(request, 'partials/contact_form.html', {'form': ContactForm()})
+            response['HX-Trigger'] = 'modal-contact-button'
+            return response
+        return render(request, 'partials/contact_form.html', {'form': form})
 
-    def get_success_message(self, cleaned_data) -> str:
-        return super().get_success_message(cleaned_data)
-
-
-class ConctactListView(View):
+class ContactListView(View):
     def get(self, request, *args, **kwargs):
         contact_list = ContactForm.Meta.model.objects.all()
         paginator = Paginator(contact_list, 5)
@@ -61,31 +149,82 @@ class ConctactListView(View):
         context = {
             # 'contact_list': properties_data,
             'page_obj': properties_data,
+            'sidebar_title': 'Contactos',
+            'sidebar_subtitle': 'Maneja la información de contactos generales!'
         }
         return render(request, 'pages/contact_list.html', context) 
     
-    # def post(self, request, *args, **kwargs):
-    #     q = request.POST.get('q', '')
-    #     page_number = request.POST.get('page_number', '')
-    #     contact_list = Contact.objects.filter(name__icontains=q)
-    #     paginator = Paginator(contact_list, 5)
-    #     # page_number = request.GET.get('page')
-    #     properties_data = paginator.get_page(page_number)
-    #     context = {
-    #         # 'contact_list': properties_data,
-    #         'page_obj': properties_data,
-    #     }
-    #     return render(request, 'partials/contact_table.html', context) 
+class OwnerContactListView(ListView):
+    model = OwnerContact
+    template_name = 'pages/contact_owner_list.html'
+    paginate_by = 2
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar_title'] = 'Contactos'
+        context['sidebar_subtitle'] = 'Maneja la información de contactos de propietarios!'
+        return context
+
+## -------------------------------------------------------------------------------------------------------------------------
+#                                                        HTMX PARTIALS (CBV)
+## -------------------------------------------------------------------------------------------------------------------------
+
+class TableOwnerContactView(View):
+    def get(self, request, *args, **kwargs):
+        q = request.GET.get('q', '')
+
+        contact_list = OwnerContact.objects.filter(name__icontains=q)
+
+        paginator = Paginator(contact_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            # 'contact_list': properties_data,
+            'page_obj': properties_data,
+            'q': q
+        }
+        return render(request, 'partials/contact_owner_table.html', context) 
+
+class ModalOwnerContactView(View):
+    def get(self, request, *args, **kwargs):
+        contact = OwnerContact.objects.get(id=kwargs['pk'])
+        contact.state = False
+        contact.save()
+        contact_list = OwnerContact.objects.all()
+        paginator = Paginator(contact_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data,
+        }
+        response = render(request, 'partials/contact_owner_table.html', context)
+        # response['HX-Trigger'] = 'modal-contact-button' # pasamos un encabezado para activar el trigger
+        return response
+
+
+## -------------------------------------------------------------------------------------------------------------------------
+#                                                        HTMX PARTIALS (FBV)
+## -------------------------------------------------------------------------------------------------------------------------
+
+def hx_contact_home_form(request):
+    form = OwnerContactForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        # messages.success(request, "Mensaje enviado correctamente")  
+        response = render(request, 'partials/contact_home_form.html', {'form': OwnerContactForm()})
+        response['HX-Trigger'] = 'modal-contact-button'
+        return response
+    return render(request, 'partials/contact_home_form.html', {'form': form})
 
 def hx_contact_table(request, page_number):
-    q = request.POST.get('q', '')
-    print(q)
+    q = request.GET.get('q', '')
+
     contact_list = Contact.objects.filter(name__icontains=q)
+    
     paginator = Paginator(contact_list, 5)
     properties_data = paginator.get_page(page_number)
     context = {
         # 'contact_list': properties_data,
         'page_obj': properties_data,
+        'q': q
     }
     return render(request, 'partials/contact_table.html', context) 
 
@@ -105,6 +244,24 @@ def hx_contact_modal(request, pk, page_number):
 
 def hx_contact_notify(request):
     return render(request, 'partials/contact_notify.html')
+
+def hx_side_alert(request):
+    return render(request, 'partials/sidealert.html')
+
+def hx_search_location(request):
+    search_location = request.POST.get('search_location', '')
+    
+    communes = Commune.objects.all()
+
+    results = [commune for commune in communes if search_location.lower() in commune.get_commune_region().lower()]
+
+
+    # results = Commune.objects.filter(name__icontains=search_location)
+    # [x for x in Q if x.somecond()]
+    # results = Commune.objects.all().get_commune_region()
+    # print(results)
+    return render(request, 'partials/search_results.html', {'results': results})
+
 
 # def hx_message(request):
 #     return render(request, 'partials/contact_alerts.html')
@@ -147,32 +304,6 @@ def hx_contact_notify(request):
 
 # def successView(request):
 #     return HttpResponse('Success! Thank you for your message.')
-
-
-
-
-###################### fomr with htmx falta limpiar cache ################
-
-# class ContactPageView(SuccessMessageMixin, View):
-#     def get(self, request, *args, **kwargs):
-#         form = ContactForm()
-#         context = {
-#             'form': form
-#         }
-#         return render(request, 'pages/contact.html', context)
-#         # response = render(request, 'pages/contact.html', context)
-#         # response['HX-Trigger'] = 'message-form'
-#         # return response
-    
-#     def post(self, request, *args, **kwargs):
-#         form = ContactForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             # messages.success(request, "Mensaje enviado correctamente")  
-#             response = render(request, 'partials/contact_form.html', {'form': ContactForm()})
-#             response['HX-Trigger'] = 'modal-contact-button' 
-#             return response
-#         return render(request, 'partials/contact_form.html', {'form': form})
 
 
 ####################### mensaje en signals ##########################

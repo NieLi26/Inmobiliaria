@@ -1,6 +1,8 @@
+import re
 from django import forms
 
-from .models import House, Property, Apartment, Commune, Region
+
+from .models import House, Property, Apartment, Commune, Region, PropertyContact
 class PropertyForm(forms.ModelForm):
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -9,10 +11,10 @@ class PropertyForm(forms.ModelForm):
 
         
 
-    more_images = forms.FileField(required=True, label='Mas Imagenes',widget=forms.FileInput(attrs={
-        'multiple': True,
-        'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
-    }))
+    # more_images = forms.FileField(required=True, label='Mas Imagenes',widget=forms.ClearableFileInput(attrs={
+    #     'multiple': True,
+    #     'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
+    # }))
 
     class Meta:
         model = Property
@@ -28,11 +30,18 @@ class PropertyForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md', "min": 0,'value':0}),
 
             # Ubicación
-            'region': forms.Select(attrs={'class': 'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm', 'hx-get': '/properties/commune_select/', 'hx-trigger': 'change', 'hx-target': '#communes'}),
+            # 'region': forms.Select(attrs={'class': 'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm', 'hx-get': "'{% url 'commune_select' %}'", 'hx-trigger': 'change delay:500ms', 'hx-target': '#communes'}),
+            'region': forms.Select(attrs={'class': 'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm', "hx-get": "/properties/commune_select", 'hx-trigger': 'change delay:500ms', 'hx-target': '#communes'}),
             'commune': forms.Select(attrs={'class': 'mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'}),
             'street_address': forms.TextInput(attrs={'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'}),
             'street_number': forms.TextInput(attrs={'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'}),
             
+            # url directions
+            'google_url': forms.TextInput(attrs={'class': 'block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'}),
+            'video_url': forms.TextInput(attrs={'class': 'block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'}),
+
+            'is_featured': forms.CheckboxInput(attrs={'class': 'focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded'}),
+
             # Contact
             'phone1': forms.TextInput(attrs={'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md', 'placeholder':'Ej. 945643233'}),
             'phone2': forms.TextInput(attrs={'class': 'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md', 'placeholder':'Ej. 945643233'}),
@@ -69,6 +78,12 @@ class PropertyForm(forms.ModelForm):
     #         raise forms.ValidationError('Muy pocos parametros') 
     #     return street_address
 
+    def clean_land_surface(self):
+        land_surface = self.cleaned_data['land_surface']
+        if land_surface == 4:
+            raise forms.ValidationError('Muy pocos parametros') 
+        return land_surface
+
 class HouseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -103,3 +118,18 @@ class ApartmentForm(forms.ModelForm):
     class Meta:
         model = Apartment
         exclude = ("state", "property")
+
+class PropertyContactForm(forms.ModelForm):
+    
+
+    class Meta:
+        model = PropertyContact
+        fields = ('name', 'from_email', 'phone', 'message')
+
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        patron = '^[0-9]+$'
+        print(re.search(patron, phone))
+        if re.search(patron, phone) == None and phone != '' :
+            raise forms.ValidationError('Solo debe ingresar numeros')
+        return phone

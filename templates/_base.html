@@ -1,5 +1,6 @@
 {% load static %}
 {% load tailwind_tags %}
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -27,20 +28,22 @@
 
   <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' >    
 
-    <div class="wrapper">
-    {% include 'partials/navbar.html' %}
+    <div class="wrapper overflow-hidden">
+      {% block navbar %}
+        {% include 'navigation/navbar.html' %}
+      {% endblock navbar %}
 
 
-    {% include 'partials/messages.html' %}
 
+    {% include 'partials/sidealert.html' %}
 
+        
     {% block content %} {% endblock content %}
 
     </div>
     
     {% block footer %}
-    {% include 'partials/footer.html' %}
-    {% include 'partials/top_button.html' %}
+      {% include 'navigation/footer.html' %}
     {% endblock footer %}
 
     <!-- JS -->

@@ -1,19 +1,36 @@
+# Real state
 
-###### Pasos a seguir #######
+## Installation
 
-1) Migrar tablas a la BBDD con los comando:
-- python manage.py makemigrations
-- python manage.py migrate
+### Migrate and Migrations
 
-2) Restaurar database.json con el comando: 
-- python manage.py loaddata database.json
+Crear la estructura de los `modelos`
 
-or 
+```bash
+$ python manage.py makemigrations
+```
 
-2) poblar estacionamientos
-- python manage.py load_data
+Migrela a su `BBDD`
 
+```bash
+$ python manage.py migrate
+```
 
-3) Crear super usuario con el comando:
-- python manage.py createsuperuser
+### Population Data
+
+#### Utilize el siguientes comandos para insertar datos dentro de sus tablas:
+ 
+Regiones de chile con sus respectivas comunas
+
+```bash
+$ python manage.py load_data
+```
+
+### Create Super User
+
+Crea tu superusuario
+
+```bash
+$ python manage.py createsuperuser
+```
 

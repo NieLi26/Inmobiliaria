@@ -1,6 +1,48 @@
 import django_filters
+from django.db.models import Q
 
-from .models import House, Apartment
+from .models import House, Apartment, Property
+
+class PropertyFilter(django_filters.FilterSet):
+
+    ORDER_ASC = 'asc'
+    ORDER_DESC = 'desc'
+
+    ORDER_CHOICES = (
+        (ORDER_ASC, 'A - Z'),
+        (ORDER_DESC, 'Z - A'),
+    )
+
+    min_room = django_filters.NumberFilter(method='get_min_room')
+    max_room = django_filters.NumberFilter(method='get_max_room')
+    min_bathroom = django_filters.NumberFilter(method='get_min_bathroom')
+    max_bathroom = django_filters.NumberFilter(method='get_max_bathroom')
+    order = django_filters.ChoiceFilter(choices=ORDER_CHOICES, method='filter_by_order')
+    # price = django_filters.RangeFilter()
+    class Meta:
+        model = Property     
+        fields = {
+                'price': ['lte', 'gte'], 
+                'land_surface': ['lte', 'gte'],
+                'type_price': ['exact'],
+            }
+
+    def filter_by_order(self, queryset, name, value):
+        expression = 'created' if value == 'asc' else '-created'
+        return queryset.order_by(expression)
+
+
+    def get_min_bathroom(self, queryset, name, value):
+        return queryset.filter(Q(houses__num_bathrooms__gte=value) | Q(apartments__num_bathrooms__gte=value))
+
+    def get_max_bathroom(self, queryset, name, value):
+        return queryset.filter(Q(houses__num_bathrooms__lte=value) | Q(apartments__num_bathrooms__lte=value))
+
+    def get_min_room(self, queryset, name, value):
+        return queryset.filter(Q(houses__num_rooms__gte=value) | Q(apartments__num_rooms__gte=value))
+
+    def get_max_room(self, queryset, name, value):
+        return queryset.filter(Q(houses__num_rooms__lte=value) | Q(apartments__num_rooms__lte=value))
 
 class HouseFilter(django_filters.FilterSet):    
     # SORT_BY_CREATED = 'created'

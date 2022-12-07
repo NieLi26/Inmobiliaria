@@ -6,6 +6,7 @@
 <div class="max-w-6xl mx-auto py-12 px-6 xl:px-0">
   <form action="." method="POST" enctype="multipart/form-data" autocomplete="off" class="space-y-4">
     {% csrf_token %}
+  <!-- General -->
   <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
     <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">General</h2>
 
@@ -27,9 +28,17 @@
             {{ form.land_surface }}
           </div>
 
-          <div class="col-span-6 sm:col-span-3">
-
+          <div class="col-span-6 ">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                {{ form.is_featured }}
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="candidates" class="font-medium text-gray-700">{{ form.is_featured.label }}</label>
+              </div>
+            </div>
           </div>
+
 
 
           <div class="col-span-4">
@@ -52,11 +61,27 @@
             {{ form.price }}
           </div>
 
+          <div class="col-span-6 sm:col-span-3">
+            <label for="publish_type" class="block text-sm font-medium text-gray-700">{{ form.google_url.label }}</label>
+            <div class="mt-1 flex rounded-md shadow-sm">
+            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">iframe</span>
+            {{ form.google_url }}
+          </div>
+          </div>
+
+          <div class="col-span-6 sm:col-span-3">
+            <label for="publish_type" class="block text-sm font-medium text-gray-700">{{ form.video_url.label }}</label>
+            <div class="mt-1 flex rounded-md shadow-sm">
+            <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">http://</span>
+            {{ form.video_url }}
+            </div>
+        </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Ubicación -->
   <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
     <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Ubicación</h2>
         <div class="shadow overflow-hidden sm:rounded-md">
@@ -66,7 +91,7 @@
                 <label for="region" class="block text-sm font-medium text-gray-700"> {{ form.region.label }}</label>
                 {{ form.region }}
               </div>
-
+              
               <div class="col-span-6 sm:col-span-3">
                 <label for="commune" class="block text-sm font-medium text-gray-700">{{ form.commune.label }}</label>
                 <div id="communes">
@@ -88,8 +113,10 @@
         </div>
   </div>
 
+  <!-- Extra -->
   {% include 'properties/property_create_extra.html' %}
 
+  <!-- Contacto -->
   <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
     <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Contacto</h2>
         <div class="shadow overflow-hidden sm:rounded-md">
@@ -109,6 +136,7 @@
         </div>
   </div>
 
+  <!-- Miniatura -->
   <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
     <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Imagenes</h2>
         <div class="shadow overflow-hidden sm:rounded-md">
@@ -119,10 +147,10 @@
                 {{ form.thumbnail }}
               </div>
 
-              <div class="col-span-6 ">
+              <!-- <div class="col-span-6 ">
                 <label for="more_images" class="block text-sm font-medium text-gray-700">{{ form.more_images.label }}</label>
                 {{ form.more_images }}
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">

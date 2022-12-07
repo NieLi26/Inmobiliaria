@@ -23,8 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # User management
     path("accounts/", include("django.contrib.auth.urls")),
-    path("", include("apps.pages.urls")),
-    path("properties/", include("apps.properties.urls")),
+    path("", include("apps.pages.urls", namespace="pages")),
+    path("properties/", include("apps.properties.urls", namespace="properties")),
+    path("newsletters/", include("apps.newsletters.urls", namespace="newsletters")),
 ]
 
 if settings.DEBUG:

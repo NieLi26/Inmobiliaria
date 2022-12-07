@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 import uuid 
 from django.db import models
 from core.settings import MEDIA_URL, STATIC_URL
@@ -64,16 +65,23 @@ class Property(TimeStampedModel):
     type_price = models.CharField('Tipo Precio*', choices=TYPE_PRICE_CHOICES, max_length=3)
     price = models.PositiveIntegerField('Precio*')
 
+    # url externas
+    google_url = models.TextField('Google Maps', blank=True, null=True)
+    video_url = models.URLField('Video', blank=True, null=True)
+
+    is_featured = models.BooleanField('Destacada?', default=False)
+
     #miniatura
     thumbnail = models.ImageField('Imagen (Opcional)',upload_to=property_directory_path, blank=True)
 
     # locacion
-    # region = models.CharField("Region*", max_length=50, blank=True)
-    # commune = models.CharField("Comuna*", max_length=50, blank=True)
-    region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Región*')
-    commune = models.ForeignKey('Commune', on_delete=models.CASCADE, verbose_name='Comuna*')
+    region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Región*', related_name='properties')
+    commune = models.ForeignKey('Commune', on_delete=models.CASCADE, verbose_name='Comuna*', related_name='properties')
     street_address = models.CharField("Calle*", max_length=50)
     street_number = models.CharField("Número*", max_length=50)
+    # google api for location
+    longitude = models.CharField("Longitud", max_length=250, blank=True)
+    latitude = models.CharField("Latitud", max_length=250, blank=True)
 
     # contact
     phone1 = models.CharField('Telefono 1 (Opcional)', max_length=9, blank=True)
@@ -81,7 +89,6 @@ class Property(TimeStampedModel):
 
     # extras for urls
     slug = models.SlugField(null=False, unique=True, blank=True)
-    location_slug = models.SlugField(null=False, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
 
@@ -94,8 +101,12 @@ class Property(TimeStampedModel):
     def __str__(self):
         return f"{self.get_property_type_display()} - {self.title}"
 
+    def toJSON(self):
+        item = model_to_dict(self)
+        return item
+
     def get_absolute_url(self):
-        return reverse("property_detail", kwargs={"publish_type": self.publish_type, "property_type": self.property_type, 'location_slug': self.location_slug,"slug": self.slug, 'uuid': self.uuid})
+        return reverse("properties:property_detail", kwargs={"publish_type": self.publish_type, "property_type": self.property_type, 'location_slug': self.commune.location_slug,"slug": self.slug, 'uuid': self.uuid})
 
 class PropertyImage(TimeStampedModel):
     '''Model definition for PropertyImage.'''
@@ -110,6 +121,17 @@ class PropertyImage(TimeStampedModel):
 
     def __str__(self):
         return self.property.title
+
+    def get_image(self):
+        if self.image:
+            return "{}{}".format(MEDIA_URL, self.image)
+        return "{}{}".format(STATIC_URL, "img/empty.png")
+    
+    def toJSON(self):
+        item = model_to_dict(self)
+        item['image'] = self.get_image()
+        return item
+
 
 class House(TimeStampedModel):
     '''Model definition for House.'''
@@ -160,61 +182,6 @@ class Apartment(TimeStampedModel):
 
 class Region(TimeStampedModel):
 
-    # REGION_METROPOLITANA = 'met'
-    # REGION_ANTOFAGASTA = 'an'
-    # REGION_ARAUCANIA = 'ar'
-    # REGION_ARICA_Y_PARINATOCA = 'ap'
-    # REGION_ATACAMA = 'at'
-    # REGION_AYSEN = 'ay'
-    # REGION_BERNARDO_OHIGGINS = 'bo'
-    # REGION_BIOBIO = 'bb'
-    # REGION_COQUIMBO = 'co'
-    # REGION_LOS_LAGOS = 'll'
-    # REGION_LOS_RIOS = 'lr'
-    # REGION_MAGALLANES = 'mag'
-    # REGION_MAULE = 'mau'
-    # REGION_NUBLE = 'nb'
-    # REGION_TARAPACA = 'ta'
-    # REGION_VALPARAISO = 'va'
-
-    # REGION_CHOICES = (
-    #     (REGION_METROPOLITANA, 'Metropolitana'),
-    #     (REGION_ANTOFAGASTA, 'Antofagasta'),
-    #     (REGION_ARAUCANIA, 'Araucania'),
-    #     (REGION_ARICA_Y_PARINATOCA, 'Arica y Parinatoca'),
-    #     (REGION_ATACAMA, 'Atacama'),
-    #     (REGION_AYSEN, 'Aysen'),
-    #     (REGION_BERNARDO_OHIGGINS, 'Bernardo Ohiggins'),
-    #     (REGION_BIOBIO, 'Biobío'),
-    #     (REGION_COQUIMBO, 'Coquimbo'),
-    #     (REGION_LOS_LAGOS, 'Los Lagos'),
-    #     (REGION_LOS_RIOS, 'Los Rios'),
-    #     (REGION_MAGALLANES, 'Magallanes'),
-    #     (REGION_MAULE, 'Maule'),
-    #     (REGION_NUBLE, 'Ñuble'),
-    #     (REGION_TARAPACA, 'Tarapaca'),
-    #     (REGION_VALPARAISO, 'Valparaiso'),
-    # )
-
-    # class Regions(models.TextChoices):
-    #     REGION_METROPOLITANA = 'met', 'Metropolitana'
-    #     REGION_ANTOFAGASTA = 'an', 'Antofagasta'
-    #     REGION_ARAUCANIA = 'ar', 'Araucania'
-    #     REGION_ARICA_Y_PARINATOCA = 'ap', 'Arica y Parinatoca'
-    #     REGION_ATACAMA = 'at', 'Atacama'
-    #     REGION_AYSEN = 'ay', 'Aysen'
-    #     REGION_BERNARDO_OHIGGINS = 'bo', 'Bernardo Ohiggins'
-    #     REGION_BIOBIO = 'bb', 'Biobío'
-    #     REGION_COQUIMBO = 'co', 'Coquimbo'
-    #     REGION_LOS_LAGOS = 'll', 'Los Lagos'
-    #     REGION_LOS_RIOS = 'lr', 'Los Rios'
-    #     REGION_MAGALLANES = 'mag', 'Magallanes'
-    #     REGION_MAULE = 'mau', 'Maule'
-    #     REGION_NUBLE = 'nb', 'Ñuble'
-    #     REGION_TARAPACA = 'ta', 'Tarapaca'
-    #     REGION_VALPARAISO = 'va', 'Valparaiso'
-
-
     '''Model definition for Region.'''
     name = models.CharField('Comuna', max_length=150)
 
@@ -231,6 +198,7 @@ class Commune(TimeStampedModel):
     '''Model definition for Commune.'''
     region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='communes')
     name = models.CharField('Comuna', max_length=150)
+    location_slug = models.SlugField()
     class Meta:
         '''Meta definition for Commune.'''
 
@@ -239,6 +207,9 @@ class Commune(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    def get_commune_region(self):
+        return f"{self.name}, {self.region}"
 
 
 # def property_save(sender, instance, **kwargs):
@@ -252,3 +223,21 @@ class Commune(TimeStampedModel):
 
 
 # post_save.connect(property_save, sender=Property)
+
+
+
+class PropertyContact(TimeStampedModel):
+    '''Model definition for PropertyContact.'''
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property_contacts')
+    name = models.CharField('Nombre Completo', max_length=200)
+    from_email = models.EmailField('Email', max_length=50)
+    phone = models.CharField('Télefono(opcional)', max_length=9, blank=True)
+    message = models.TextField('Mensaje')
+    class Meta:
+        '''Meta definition for PropertyContact.'''
+
+        verbose_name = 'PropertyContact'
+        verbose_name_plural = 'PropertyContacts'
+
+    def __str__(self):
+        return str(self.from_email)

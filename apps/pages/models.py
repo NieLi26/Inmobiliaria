@@ -1,3 +1,4 @@
+from secrets import choice
 from django.db import models
 
 from apps.base.models import TimeStampedModel
@@ -6,10 +7,17 @@ from apps.base.models import TimeStampedModel
 class Contact(TimeStampedModel):
     """Model definition for Contact."""
 
+    class Subjects(models.TextChoices):
+        ASUNTO_1 = 'a1', 'Asunto 1'
+        ASUNTO_2 = 'a2', 'Asunto 2'
+        ASUNTO_3 = 'a3', 'Asunto 3'
+        ASUNTO_4 = 'a4', 'Asunto 4'
+        ASUNTO_5 = 'a5', 'Asunto 5'
+
     # TODO: Define fields here
     name = models.CharField('Nombre Completo', max_length=200)
     from_email = models.EmailField('Email', max_length=50)
-    subject = models.CharField('Asunto', max_length=50)
+    subject = models.CharField('Asunto', choices=Subjects.choices , max_length=2)
     phone = models.CharField('Télefono(opcional)', max_length=9, blank=True)
     message = models.TextField('Mensaje')
 
@@ -22,3 +30,19 @@ class Contact(TimeStampedModel):
     def __str__(self):
         """Unicode representation of Contact."""
         return self.name
+
+class OwnerContact(TimeStampedModel):
+    '''Model definition for OwnerContact.'''
+    name = models.CharField('Nombre Completo', max_length=200)
+    from_email = models.EmailField('Email', max_length=50)
+    subject = models.CharField('Asunto', max_length=100)
+    phone = models.CharField('Télefono(opcional)', max_length=9, blank=True)
+    message = models.TextField('Mensaje')
+    class Meta:
+        '''Meta definition for OwnerContact.'''
+
+        verbose_name = 'OwnerContact'
+        verbose_name_plural = 'OwnerContacts'
+
+    def __str__(self):
+        return str(self.from_email)

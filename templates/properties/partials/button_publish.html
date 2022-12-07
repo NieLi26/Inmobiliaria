@@ -1,11 +1,4 @@
-
-
-
-  
-
-
-
-<div x-cloak  x-data="{ open: false }">
+<div x-data="{ open: false }">
 
     <div @click="open = true" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -13,7 +6,7 @@
           </svg>
       </div>       
       
-      <div x-show="open"  class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div x-show="open"  x-cloak  class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         
@@ -34,7 +27,7 @@
                         </p>
                         <div class="flex justify-center justify-around w-full mt-8">
                                   <button 
-                                  hx-get="{% url 'custom_status' property.id 'draft' page_obj.number %}"
+                                  hx-get="{% url 'properties:custom_status' property.id 'draft' page_obj.number %}"
                                   hx-target="#custom_table"
                                   @click="open = false" type="submit" class="py-2 px-4 mx-3 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-500 focus:ring-offset-yellow-200 text-black w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
                                       Despublicar

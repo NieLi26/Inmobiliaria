@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+from django.utils.text import slugify
+
 from apps.properties.models import Region, Commune
 
 class Command(BaseCommand):
@@ -88,7 +90,7 @@ class Command(BaseCommand):
         ]
 
         for commune in metropolitana_commune:
-            Commune.objects.create(name=commune, region=met)
+            Commune.objects.create(name=commune, region=met, location_slug=slugify(f"{commune}-{met}"))
 
         # Antofagasta
         an = Region.objects.get(name='Antofagasta')
@@ -106,7 +108,7 @@ class Command(BaseCommand):
         ]
 
         for commune in antofagasta_commune:
-            Commune.objects.create(name=commune, region=an)
+            Commune.objects.create(name=commune, region=an, location_slug=slugify(f"{commune}-{an}"))
 
         # Araucanía
         ar = Region.objects.get(name='Araucanía')
@@ -147,7 +149,7 @@ class Command(BaseCommand):
         ]
 
         for commune in araucania_commune:
-            Commune.objects.create(name=commune, region=ar)
+            Commune.objects.create(name=commune, region=ar, location_slug=slugify(f"{commune}-{ar}"))
 
         # Arica y Parinatoca
         ap = Region.objects.get(name='Arica y Parinatoca')
@@ -160,7 +162,7 @@ class Command(BaseCommand):
         ]
 
         for commune in arica_y_parinatoca_commune:
-            Commune.objects.create(name=commune, region=ap)
+            Commune.objects.create(name=commune, region=ap, location_slug=slugify(f"{commune}-{ap}"))
 
         # Atacama
         at = Region.objects.get(name='Atacama')
@@ -178,7 +180,7 @@ class Command(BaseCommand):
         ]
 
         for commune in atacama_commune:
-            Commune.objects.create(name=commune, region=at)
+            Commune.objects.create(name=commune, region=at, location_slug=slugify(f"{commune}-{at}"))
 
         # Aysén
         ay = Region.objects.get(name='Aysén')
@@ -197,7 +199,7 @@ class Command(BaseCommand):
         ]
 
         for commune in aysen_commune:
-            Commune.objects.create(name=commune, region=ay)
+            Commune.objects.create(name=commune, region=ay, location_slug=slugify(f"{commune}-{ay}"))
 
         # Bernardo Ohiggins
         bo = Region.objects.get(name='Bernardo Ohiggins')
@@ -239,7 +241,7 @@ class Command(BaseCommand):
         ]
 
         for commune in bernardo_ohiggins_commune:
-            Commune.objects.create(name=commune, region=bo)
+            Commune.objects.create(name=commune, region=bo, location_slug=slugify(f"{commune}-{bo}"))
 
         # Biobío
         bb = Region.objects.get(name='Biobío')
@@ -281,7 +283,7 @@ class Command(BaseCommand):
         ]
 
         for commune in bio_bio_commune:
-            Commune.objects.create(name=commune, region=bb)
+            Commune.objects.create(name=commune, region=bb, location_slug=slugify(f"{commune}-{bb}"))
 
         # Coquimbo
         co = Region.objects.get(name='Coquimbo')
@@ -305,7 +307,7 @@ class Command(BaseCommand):
         ]
 
         for commune in coquimbo_commune:
-            Commune.objects.create(name=commune, region=co)
+            Commune.objects.create(name=commune, region=co, location_slug=slugify(f"{commune}-{co}"))
 
         # Los Lagos
         ll = Region.objects.get(name='Los Lagos')
@@ -344,7 +346,7 @@ class Command(BaseCommand):
         ]
 
         for commune in los_lagos_commune:
-            Commune.objects.create(name=commune, region=ll)
+            Commune.objects.create(name=commune, region=ll, location_slug=slugify(f"{commune}-{ll}"))
 
         # Los Ríos
         lr = Region.objects.get(name='Los Ríos')
@@ -365,7 +367,7 @@ class Command(BaseCommand):
         ]
 
         for commune in los_rios_commune:
-            Commune.objects.create(name=commune, region=lr)
+            Commune.objects.create(name=commune, region=lr, location_slug=slugify(f"{commune}-{lr}"))
 
         # Magallanes
         ma = Region.objects.get(name='Magallanes')
@@ -385,7 +387,7 @@ class Command(BaseCommand):
         ]
 
         for commune in magallanes_commune:
-            Commune.objects.create(name=commune, region=ma)
+            Commune.objects.create(name=commune, region=ma, location_slug=slugify(f"{commune}-{ma}"))
 
         # Maule
         mau = Region.objects.get(name='Maule')
@@ -424,7 +426,7 @@ class Command(BaseCommand):
         ]
 
         for commune in maule_commune:
-            Commune.objects.create(name=commune, region=mau)
+            Commune.objects.create(name=commune, region=mau, location_slug=slugify(f"{commune}-{mau}"))
 
         # Ñuble
         nu = Region.objects.get(name='Ñuble')
@@ -463,7 +465,7 @@ class Command(BaseCommand):
         ]
 
         for commune in nuble_commune:
-            Commune.objects.create(name=commune, region=nu)
+            Commune.objects.create(name=commune, region=nu, location_slug=slugify(f"{commune}-{nu}"))
 
         # Tarapaca
         ta = Region.objects.get(name='Tarapacá')
@@ -479,7 +481,7 @@ class Command(BaseCommand):
         ]
 
         for commune in tarapaca_commune:
-            Commune.objects.create(name=commune, region=ta)
+            Commune.objects.create(name=commune, region=ta, location_slug=slugify(f"{commune}-{ta}"))
 
         # Valparaiso
         va = Region.objects.get(name='Valparaíso')
@@ -526,4 +528,6 @@ class Command(BaseCommand):
         ]
 
         for commune in valparaiso_commune:
-            Commune.objects.create(name=commune, region=va)
+            Commune.objects.create(name=commune, region=va, location_slug=slugify(f"{commune}-{va}"))
+
+        

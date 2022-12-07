@@ -35,7 +35,7 @@
             </td>
             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 <p class="text-gray-900 whitespace-no-wrap">
-                    {{ contact.created_date | date:'Y-m-d ' }}
+                    {{ contact.created | date:'Y-m-d ' }}
                 </p>
             </td>
             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -84,52 +84,82 @@
                     </svg>
                     </button>
                     
+                
                     <div x-show="open"  class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 
                         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
                     
                         <div class="fixed z-10 inset-0 overflow-y-auto">
-                        <div class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
+                        <div class="flex items-center justify-center min-h-full p-4 text-center sm:p-0">
+                            
                             <div @click.away="open = false" class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
-                                <div  class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
-                                    <div class="modal-header flex flex-shrink-0 items-center justify-center p-4 border-b border-gray-200 rounded-t-md">
-                                    <h5 class="text-xl font-medium leading-normal text-gray-800 " id="exampleModalScrollableLabel">
-                                            Mensaje de
-                                            <span class="inline-block py-1.5 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold {% if contact.state == False %} bg-green-600 {% else %} bg-red-600 {% endif %} text-white rounded-full">
-                                            {{ contact.from_email }}
-                                            </span>
-                                    </h5>
-                                    <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <div
+                                class="modal-content rounded-2xl border border-blue-100 bg-white p-8 shadow-lg"
+                                role="alert"
+                                >
+
+                                <button 
+                                    @click="open = false"
+                                    class="absolute top-2 right-2 hover:bg-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="flex-shrink-0 w-4 h-4">
+                                        <polygon points="427.314 107.313 404.686 84.687 256 233.373 107.314 84.687 84.686 107.313 233.373 256 84.686 404.687 107.314 427.313 256 278.627 404.686 427.313 427.314 404.687 278.627 256 427.314 107.313"></polygon>
+                                    </svg>
+                                </button>
+
+                                    <div class="modal-header items-center sm:flex ">
+                                        <span
+                                        class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-400 text-white"
+                                        >
+                                        <svg
+                                            class="h-3 w-3"
+                                            fill="currentColor"
+                                            viewbox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                            clip-rule="evenodd"
+                                            d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z"
+                                            fill-rule="evenodd"
+                                            />
+                                        </svg>
+                                        </span>
+            
+                                        <p class=" text-lg font-medium mb-1 mt-3 sm:mt-0 sm:ml-3 sm:mr-2">
+                                        Tienes un nuevo mensaje de 
+                                        </p>
+                                        <strong
+                                        class="rounded border border-current px-3 py-1.5 text-[14px] font-medium lowercase text-blue-500"
+                                        >
+                                        {{ contact.from_email }}
+                                        </strong>
                                     </div>
-                                    <div class="modal-body relative p-4 bg-gray-100">
-                                        <div class="max-w-prose mx-auto break-words">
-                                        <p class="mt-4 text-lg text-black leading-8 ">{{ contact.message }}</p>
-                                        </div>
+            
+                                    <p class="modal-body mt-4 text-gray-500 break-words">
+                                        {{ contact.message }}
+                                    </p>
+            
+                                    <div class="modal-footer mt-6 sm:flex">
+                                        <a
+                                        class="inline-block w-full rounded-lg bg-blue-500 px-5 py-3 text-center text-sm font-semibold text-white sm:w-auto"
+                                        href="mailto:{{ contact.from_email }}"
+                                        >
+                                        Responder
+                                        </a>
+                                        {% if contact.state == True %}
+                                            <button
+                                            hx-get="{% url 'pages:hx_contact_modal' contact.id page_obj.number %}"
+                                            hx-target='#table-contact'
+                                            hx-swap="innerHTML"
+                                            @click="open = false" 
+                                            class="mt-3 inline-block w-full rounded-lg bg-gray-50 px-5 py-3 text-center text-sm font-semibold text-gray-500 sm:mt-0 sm:ml-3 sm:w-auto"
+                                            >
+                                            Marcar como Leído
+                                            </button>
+                                        {% endif %}
                                     </div>
-                                    <!-- <form action="." method='post'> -->
-                                    <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
-                                    {% if contact.state == True %}
-                                        <button 
-                                        hx-get="{% url 'hx_contact_modal' contact.id page_obj.number %}"
-                                        hx-target='#table-contact'
-                                        hx-swap="innerHTML"
-                                        @click="open = false" 
-                                        class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
-                                        Leido
-                                        </button>
-                                
-                                        <button @click="open = false" type="button" class="ml-2 inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                    {% else %}
-                                        <button @click="open = false" type="button" class="ml-2 inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out" data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                    {% endif %}
-                                    </div>
-                                <!-- </form> -->
                                 </div>
                             </div>
+                        
                         </div>
                         </div>
                     </div>
@@ -148,49 +178,91 @@
     <div class="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
         <div class="flex items-center">
 
+
             {% if page_obj.has_previous %}
-            <a href="?page={{page_obj.previous_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+            <button 
+            hx-get="{% url 'pages:hx_contact_table'  page_obj.previous_page_number  %}" 
+            hx-vals='{"q": "{{q}}"}'
+            hx-target='#table-contact'
+            hx-swap="innerHTML"
+             class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
                 <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z">
                     </path>
                 </svg>
-            </a>
+            </button>
             {% endif %}
 
             {% if 4 in page_obj.paginator.page_range %}
 
                 {% if page_obj.number|add:"-1" >= 1 %}
-                <a href="?page={{ page_obj.number|add:"-1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"-1" }}</a> 
+                    <button 
+                        hx-get="{% url 'pages:hx_contact_table'  page_obj.number|add:"-1" %}" 
+                        hx-vals='{"q": "{{q}}"}'
+                        hx-target='#table-contact'
+                        hx-swap="innerHTML"
+                        href="#" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"-1" }}
+                    </button> 
                 {% endif %}
 
-                <a href="?page={{ page_obj.number }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ page_obj.number }}</a> 
+                <button 
+                    hx-get="{% url 'pages:hx_contact_table'  page_obj.number %}" 
+                    hx-vals='{"q": "{{q}}"}'
+                    hx-target='#table-contact'
+                    hx-swap="innerHTML"
+                    class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ page_obj.number }}
+                </button> 
 
 
                 {% if page_obj.number|add:"1" in page_obj.paginator.page_range %}
-                <a href="?page={{ page_obj.number|add:"1" }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"1" }}</a> 
+                    <button
+                        hx-get="{% url 'pages:hx_contact_table'  page_obj.number|add:"1" %}" 
+                        hx-vals='{"q": "{{q}}"}'
+                        hx-target='#table-contact'
+                        hx-swap="innerHTML" 
+                        class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ page_obj.number|add:"1" }}
+                    </button> 
                 {% endif %}
 
             {% else %}
                 {% for i in page_obj.paginator.page_range %}
                     {% if i == page_obj.number %}
-                    <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ i }}</a> 
-                        {% else %}
-                        <a href="?page={{ i }}" class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ i }}</a> 
+                        <button
+                            hx-get="{% url 'pages:hx_contact_table'  i %}" 
+                            hx-vals='{"q": "{{q}}"}'
+                            hx-target='#table-contact'
+                            hx-swap="innerHTML" 
+                            class="w-full px-4 py-2 border-t border-b text-base text-white  bg-blue-500 hover:bg-blue-600" >{{ i }}
+                        </button> 
+                    {% else %}
+                        <button
+                            hx-get="{% url 'pages:hx_contact_table'  i %}" 
+                            hx-vals='{"q": "{{q}}"}'
+                            hx-target='#table-contact'
+                            hx-swap="innerHTML" 
+                            class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100">{{ i }}
+                        </button> 
                     {% endif %}
                 {% endfor %}
 
             {% endif %}
             
+        
 
             {% if page_obj.has_next %}
-            <a href="?page={{page_obj.next_page_number}}" class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100">
+            <button 
+            hx-get="{% url 'pages:hx_contact_table'  page_obj.next_page_number  %}" 
+            hx-vals='{"q": "{{q}}"}'
+            hx-target='#table-contact'
+            hx-swap="innerHTML"
+            class="w-full p-4 border text-base rounded-r-xl text-gray-600 bg-white hover:bg-gray-100">
                 <svg width="9" fill="currentColor" height="8" class="" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z">
                     </path>
                 </svg>
-            </a>
+            </button>
             {% endif %}
-
+            {{ q }}
         </div>
     </div>
 {% endif %}

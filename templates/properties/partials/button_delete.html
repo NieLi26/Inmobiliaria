@@ -1,4 +1,4 @@
-<div x-cloak  x-data="{ open: false }">
+<div  x-data="{ open: false }">
 
   <div @click="open = true" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -12,7 +12,7 @@
         Eliminar
     </button> {% endcomment %}
     
-    <div x-show="open"  class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div x-show="open"  x-cloak class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       
@@ -35,8 +35,12 @@
                       <div class="flex items-center justify-between gap-4 w-full mt-8">          
                             <div class='inline-flex'>
                                 <button 
-                                hx-delete="{% url 'property_delete' property.uuid page_obj.number %}"
-                                hx-target="#test_table"
+                                {% if url_option == 'custom_table' %}
+                                  hx-delete="{% url 'properties:custom_delete' property.uuid page_obj.number %}"
+                                {% elif url_option == 'table_draft' %}
+                                  hx-delete="{% url 'properties:property_delete' property.uuid page_obj.number %}"
+                                {% endif %}
+                                hx-target="#custom_table"
                                 @click="open = false" type="submit" class="py-2 px-4 mx-3 bg-red-600 hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
                                     Eliminar
                                 </button>

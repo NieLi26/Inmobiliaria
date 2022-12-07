@@ -1,0 +1,300 @@
+{% extends '_base.html' %}
+
+{% block head %}
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+{% endblock head %}
+
+ {% block content %}
+ <!-- <form action="."  style="margin-bottom: 5px;" enctype="multipart/form-data" method="POST" class="dropzone " id="dropzone">
+ {% csrf_token %}
+    <input type="hidden" name="file" multiple />
+
+ </form> -->
+
+ <div id="galeryContent">
+ {% if property_images %}
+  {% for property_image in property_images %}
+    <input type="hidden" name="" id="{{ property_image.id }}" value="{{ property_image.image }}" class="galeria">
+    
+  {% endfor %}
+ {% endif %}
+ </div>
+
+{% if property_images %}
+<!-- <div class="bg-white">
+  <div class="mx-auto py-16 px-4 overflow-hidden sm:py-24 sm:px-6 lg:px-8">
+    <div class="relative w-full flex gap-4 py-6 flex-wrap" id="template-test">
+      {% for property_image in property_images %}
+      <img class="h-48 aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="{{ property_image.image.url }}" alt="Image 1" data-dz-remove>
+      {% endfor %}
+    </div>
+  </div>
+</div> -->
+
+<!-- <div class="flex items-center flex-wrap" id="template-test">
+  {% for property_image in property_images %}
+  <div class="md:w-1/3 xl:w-1/4 hover:scale-110 ease-in-out transition duration-300 p-6 dz-preview dz-success dz-complete dz-image-preview" >
+      <img class="h-72 object-contain " src="{{ property_image.image.url }}" alt="">
+  </div>
+  {% endfor %}
+</div> -->
+
+{% endif %}
+
+
+<input type="hidden" id="id_property" value="{{ property.id }}">
+
+
+
+<section class="">
+  <div class="mx-auto max-w-full px-4 py-16 sm:px-6 lg:px-8">
+
+    <div class="mx-auto max-w-lg text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Sube tus Imagenes</h2>
+
+      <p class="mt-4 text-gray-700">
+        Puedes subir las imagenes que se desplegaran en el detalle de la publicación.
+      </p>
+    </div>
+    <div class="mx-auto text-center">
+      <form action="."  style="margin-bottom: 5px;" enctype="multipart/form-data" method="POST" class="dropzone " id="dropzone">
+        {% csrf_token %}
+           <input type="hidden" name="file" multiple />
+       
+        </form>
+       
+    </div>
+
+
+    <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3" id="template-test">
+      {% for property_image in property_images %}
+      <div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">
+        <!-- <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-10 w-10 text-pink-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path d="M12 14l9-5-9-5-9 5 9 5z" />
+          <path
+            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+          />
+        </svg> -->
+    <img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="{{ property_image.image.url }}" alt="Image 1" data-dz-remove>
+    <!-- <h2 class="mt-4 text-xl font-bold text-gray-700">Digital campaigns</h2>
+
+    <p class="mt-1 text-sm text-gray-700">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ut quo
+      possimus adipisci distinctio alias voluptatum blanditiis laudantium.
+    </p> -->
+    </div>
+    {% endfor %}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href="{% url 'properties:property_detail' property.publish_type property.property_type property.commune.location_slug property.slug property.uuid %}"
+        class="mt-8 inline-flex items-center rounded border border-pink-600 bg-pink-600 px-8 py-3 text-black hover:bg-transparent focus:outline-none focus:ring active:text-pink-500"
+      >
+        <span class="text-sm font-medium"> ir a publicación </span>
+
+        <svg
+          class="ml-3 h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+{% endblock content %} 
+
+
+{% block js %}
+
+<script >
+
+ Dropzone.autoDiscover = false;
+
+
+    const dropzone = new Dropzone('form#dropzone', {
+        dictDefaultMessage: 'Sube hasta 10 imágenes',
+        acceptedFiles: ".png,.jpg,.gif,.jpeg",
+        addRemoveLinks: true,
+        dictRemoveFile: "Eliminar Imagen",
+        maxFiles: 10,
+
+
+        init: function(){
+          const galeria = document.querySelectorAll('.galeria');
+           const dominio ='http://localhost:8000'
+            if(galeria.length > 0 ) {
+                galeria.forEach(imagen => {
+                    const imagenPublicada = {};
+                    imagenPublicada.size = 1;
+                    imagenPublicada.name = imagen.value;
+                    imagenPublicada.id = imagen.id;
+                
+                    this.options.addedfile.call(this, imagenPublicada);
+                    this.options.thumbnail.call(this, imagenPublicada, `${dominio}/media/${imagenPublicada.name}`);
+  
+                    imagenPublicada.previewElement.classList.add('dz-success');
+                    imagenPublicada.previewElement.classList.add('dz-complete');
+                    
+
+                })
+            }
+        }
+    })
+
+
+    dropzone.on('success', function(file, respuesta){
+      // file.previewElement.innerHTML = "";
+      // document.querySelector('#template-container').innerHTML = file.previewElement
+      // console.log(file.previewElement);
+      file.previewElement.parentNode.removeChild(file.previewElement);
+   })
+
+    
+    dropzone.on('addedfile', function(file){
+
+        const property = document.querySelector('#id_property')
+        // const params = {
+        //     imagen: file.upload.filename,
+        //     action: 'create',
+        //     id: property.value
+        // }
+      
+        const params = new FormData()
+        params.append('imagen', file)
+        params.append('action', 'create')
+        params.append('id', property.value)
+        const  url = location.href;
+      
+        fetch(url, {
+            method: "POST",
+            body: params,
+            headers: {
+            // "Content-type": "application/json;charset=UTF-8",
+            'X-CSRFToken': csrftoken
+          }
+            
+        }).then(function (res){
+            console.log(res.status);
+          if (res.status === 200) {
+            return res.json()
+          }else{
+            throw new Error();
+          }
+        }).then(data=>{
+          console.log(this.options);
+          const dominio ='http://localhost:8000'
+          const imagenPublicada = {};
+          imagenPublicada.size = 1;
+          imagenPublicada.name = data.property_image;
+          imagenPublicada.id = data.id;
+          imagenPublicada.status = 'success';
+         
+      
+          this.options.addedfile.call(this, imagenPublicada);
+          this.options.thumbnail.call(this, imagenPublicada, `${dominio}/media/${imagenPublicada.name}`);
+
+          imagenPublicada.previewElement.classList.add('dz-success');
+          imagenPublicada.previewElement.classList.add('dz-complete');
+
+          let html = ''
+          for(const i of data.preview_images) {
+            html += '<div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">'
+            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${dominio}/${i.image}" alt="Image 1" data-dz-remove>`
+            html += '</div>'
+          }
+        
+          document.querySelector('#template-test').innerHTML = html
+
+        }) 
+        .catch(err => console.log(err));
+
+    })
+    
+
+    dropzone.on('removedfile', function(file){
+        // const params = {
+        //     imagen: file.nombreServidor,
+        //     action: 'delete'
+        // }
+      
+        const params = new FormData()
+        // params.append('imagen', file.nombreServidor)
+        params.append('action', 'delete')
+        params.append('id', file.id)
+
+        // const  url=  document.querySelector("#url").value;
+        const  url = location.href;
+      
+        fetch(url, {
+            method: "POST",
+            body: params,
+            headers: {
+            // "Content-type": "application/json;charset=UTF-8",
+            'X-CSRFToken': csrftoken
+          }
+            
+        }).then(function (res){
+          if (res.status === 200) {
+            return res.json()
+          }else{
+            throw new Error();
+          }
+        }).then(data=>{
+          console.log(data);
+          const dominio ='http://localhost:8000'
+          let html = ''
+          for(const i of data.preview_images) {
+            html += '<div class="block rounded-xl border border-gray-800 p-8 shadow-xl transition hover:border-pink-500/10 hover:shadow-pink-500/10">'
+            html += `<img class="h-full w-full aspect-video rounded-sm object-cover object-center dark:bg-gray-500 hover:scale-110 ease-in-out transition duration-300" src="${dominio}/${i.image}" alt="Image 1" data-dz-remove>`
+            html += '</div>'
+          }
+        
+          document.querySelector('#template-test').innerHTML = html
+        }) 
+        .catch(err => console.log(err));
+
+
+
+    })
+
+// document.addEventListener('DOMContentLoaded', () => {
+// })
+// or
+// onload
+</script>
+{% endblock js %}
+
+<!-- const params = {
+  imagen: file.nombreServidor,
+  action: 'delete'
+}
+
+// const  url=  document.querySelector("#url").value;
+const  url=  location.href; -->

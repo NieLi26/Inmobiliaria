@@ -4,22 +4,237 @@
 {% block title %} Inicio {% endblock title %} 
 
 {% block head %}     
-{% comment %} CDN Owl Carousel {% endcomment %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" integrity="sha512-sMXtMNL1zRzolHYKEujM2AqCLUR9F2C4/05cdbxjjLSRvMQIciEPCQZo++nk7go3BtSuK9kfa/s+a4f4i5pLkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- CDN Owl Carousel BEGIN -->
+<link rel="stylesheet" href="{% static 'lib/OwlCarousel2-2.3.4/assets/owl.carousel.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'lib/OwlCarousel2-2.3.4/assets/owl.theme.default.min.css' %}"/>
+<!-- CDN Owl Carousel END -->
 {% endblock head %}
 
 
 {% block content %} 
+<!-- Poup Contact -->
+<aside
+  x-data="{ show: false, open:false }"
+
+  @mouseleave="show = false"
+  @click.away="show = false"
+  class="fixed bottom-1/2 right-0 z-20 flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2 text-white"
+>
+  <svg
+  @mouseenter="show = true"
+  @click="show = true"
+    xmlns="http://www.w3.org/2000/svg"
+    class="icon icon-tabler icon-tabler-mail"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    stroke-width="2"
+    stroke="currentColor"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+    <polyline points="3 7 12 13 21 7"></polyline>
+  </svg>
+
+  <button
+    x-cloak
+    x-show="show"
+    @click="open = true; show = false"
+    x-transition:enter="transform ease-out duration-300 transition"
+    x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+    x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    href="/new-thing"
+    target="_blank"
+    rel="noreferrer"
+    class="text-sm font-medium hover:opacity-75 ml-1"
+  >
+    Hey! Quieres vender tu propiedad? 👋
+  </button>
+
+  <div
+    x-cloak
+    x-show="open"
+    class="relative z-10"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+
+    <div class="fixed z-30 inset-0 overflow-y-auto">
+      <div
+        class="flex items-center justify-center min-h-full p-4 text-center sm:p-0"
+      >
+        <div
+          @click.away="open = false"
+          class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-7xl sm:w-full"
+        >
+        <div class="relative bg-white shadow-xl">
+            <h2 class="sr-only">Contact us</h2>
+    
+            <div class="grid grid-cols-1 lg:grid-cols-3">
+              <!-- Contact information -->
+              <div class="relative overflow-hidden py-10 px-6 bg-indigo-700 sm:px-10 xl:p-12">
+                <div class="absolute inset-0 pointer-events-none sm:hidden" aria-hidden="true">
+                  <svg class="absolute inset-0 w-full h-full" width="343" height="388" viewBox="0 0 343 388" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M-99 461.107L608.107-246l707.103 707.107-707.103 707.103L-99 461.107z" fill="url(#linear1)" fill-opacity=".1"></path>
+                    <defs>
+                      <linearGradient id="linear1" x1="254.553" y1="107.554" x2="961.66" y2="814.66" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#fff"></stop>
+                        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <div class="hidden absolute top-0 right-0 bottom-0 w-1/2 pointer-events-none sm:block lg:hidden" aria-hidden="true">
+                  <svg class="absolute inset-0 w-full h-full" width="359" height="339" viewBox="0 0 359 339" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M-161 382.107L546.107-325l707.103 707.107-707.103 707.103L-161 382.107z" fill="url(#linear2)" fill-opacity=".1"></path>
+                    <defs>
+                      <linearGradient id="linear2" x1="192.553" y1="28.553" x2="899.66" y2="735.66" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#fff"></stop>
+                        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <div class="hidden absolute top-0 right-0 bottom-0 w-1/2 pointer-events-none lg:block" aria-hidden="true">
+                  <svg class="absolute inset-0 w-full h-full" width="160" height="678" viewBox="0 0 160 678" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M-161 679.107L546.107-28l707.103 707.107-707.103 707.103L-161 679.107z" fill="url(#linear3)" fill-opacity=".1"></path>
+                    <defs>
+                      <linearGradient id="linear3" x1="192.553" y1="325.553" x2="899.66" y2="1032.66" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#fff"></stop>
+                        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-white">Información de contacto</h3>
+                <p class="mt-6 text-base text-indigo-50 max-w-3xl">Nullam risus blandit ac aliquam justo ipsum. Quam mauris volutpat massa dictumst amet. Sapien tortor lacus arcu.</p>
+                <dl class="mt-8 space-y-6">
+                  <dt><span class="sr-only">Phone number</span></dt>
+                  <dd class="flex text-base text-indigo-50">
+                    <svg class="flex-shrink-0 w-6 h-6 text-indigo-200" x-description="Heroicon name: outline/phone" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+    </svg>
+                    <span class="ml-3">+1 (555) 123-4567</span>
+                  </dd>
+                  <dt><span class="sr-only">Email</span></dt>
+                  <dd class="flex text-base text-indigo-50">
+                    <svg class="flex-shrink-0 w-6 h-6 text-indigo-200" x-description="Heroicon name: outline/mail" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+    </svg>
+                    <span class="ml-3">support@workcation.com</span>
+                  </dd>
+                </dl>
+                <ul role="list" class="mt-8 flex space-x-12">
+                  <li>
+                    <a class="text-indigo-200 hover:text-indigo-100" href="#">
+                      <span class="sr-only">Facebook</span>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" aria-hidden="true">
+                        <path d="M22.258 1H2.242C1.556 1 1 1.556 1 2.242v20.016c0 .686.556 1.242 1.242 1.242h10.776v-8.713h-2.932V11.39h2.932V8.887c0-2.906 1.775-4.489 4.367-4.489 1.242 0 2.31.093 2.62.134v3.037l-1.797.001c-1.41 0-1.683.67-1.683 1.653v2.168h3.362l-.438 3.396h-2.924V23.5h5.733c.686 0 1.242-.556 1.242-1.242V2.242C23.5 1.556 22.944 1 22.258 1" fill="currentColor"></path>
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="text-indigo-200 hover:text-indigo-100" href="#">
+                      <span class="sr-only">GitHub</span>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" aria-hidden="true">
+                        <path d="M11.999 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.386.6.11.819-.26.819-.578 0-.284-.01-1.04-.017-2.04-3.337.724-4.042-1.61-4.042-1.61-.545-1.386-1.332-1.755-1.332-1.755-1.09-.744.082-.73.082-.73 1.205.086 1.838 1.238 1.838 1.238 1.07 1.833 2.81 1.304 3.493.996.109-.775.419-1.303.762-1.603C7.145 17 4.343 15.97 4.343 11.373c0-1.31.468-2.382 1.236-3.22-.124-.304-.536-1.524.118-3.176 0 0 1.007-.323 3.3 1.23.956-.266 1.983-.4 3.003-.404 1.02.005 2.046.138 3.005.404 2.29-1.553 3.296-1.23 3.296-1.23.655 1.652.243 2.872.12 3.176.77.838 1.233 1.91 1.233 3.22 0 4.61-2.806 5.624-5.478 5.921.43.37.814 1.103.814 2.223 0 1.603-.015 2.898-.015 3.291 0 .321.217.695.825.578C20.565 21.796 24 17.3 24 12c0-6.627-5.373-12-12.001-12" fill="currentColor"></path>
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="text-indigo-200 hover:text-indigo-100" href="#">
+                      <span class="sr-only">Twitter</span>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" aria-hidden="true">
+                        <path d="M7.548 22.501c9.056 0 14.01-7.503 14.01-14.01 0-.213 0-.425-.015-.636A10.02 10.02 0 0024 5.305a9.828 9.828 0 01-2.828.776 4.94 4.94 0 002.165-2.724 9.867 9.867 0 01-3.127 1.195 4.929 4.929 0 00-8.391 4.491A13.98 13.98 0 011.67 3.9a4.928 4.928 0 001.525 6.573A4.887 4.887 0 01.96 9.855v.063a4.926 4.926 0 003.95 4.827 4.917 4.917 0 01-2.223.084 4.93 4.93 0 004.6 3.42A9.88 9.88 0 010 20.289a13.941 13.941 0 007.548 2.209" fill="currentColor"></path>
+                      </svg>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+    
+              <!-- Contact form -->
+              <div class="py-10 px-6 sm:px-10 lg:col-span-2 xl:p-12">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium text-gray-900">Envianos un mensaje</h3>
+
+                  <button 
+                  @click="open = false"
+                  class="absolute top-2 right-2 hover:bg-gray-200 text-black hover:rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="flex-shrink-0 w-4 h-4">
+                      <polygon points="427.314 107.313 404.686 84.687 256 233.373 107.314 84.687 84.686 107.313 233.373 256 84.686 404.687 107.314 427.313 256 278.627 404.686 427.313 427.314 404.687 278.627 256 427.314 107.313"></polygon>
+                  </svg>
+                </button>
+                </div>
+                <div id="#contact-home-form">
+                  {% include 'partials/contact_home_form.html' %}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Popup WSP -->
+  <aside
+  x-data="{ show: false, open:false }"
+  @mouseleave="show = false"
+  @click.away="show = false"
+  class="fixed bottom-1/3 right-0 z-10 flex items-center justify-center rounded-lg bg-green-600 px-3 py-2 text-white"
+>
+  <svg
+  @mouseenter="show = true"
+  @click="show = true"
+  xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-whatsapp text-green-200" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"></path>
+    <path d="M9 10a0.5 .5 0 0 0 1 0v-1a0.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a0.5 .5 0 0 0 0 -1h-1a0.5 .5 0 0 0 0 1"></path>
+ </svg>
+
+  <a
+  href="https://wa.me/56968462368?text=Preguntas de propiedades"
+    x-cloak
+    x-show="show"
+    @click="open = true; show = false"
+    x-transition:enter="transform ease-out duration-300 transition"
+    x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+    x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    href="/new-thing"
+    target="_blank"
+    rel="noreferrer"
+    class="text-sm font-medium hover:opacity-75 ml-1"
+  >
+    WhatsApp
+  </a>
+
+</aside>
+
 
 <!-- Search BEGIN -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <form class="space-y-4 md:space-y-0 md:flex md:items-center md:justify-center py-16 " action=".">
+  <form class="space-y-4 md:space-y-0 md:flex md:items-center md:justify-center py-16 " method="POST">
+    {% csrf_token %}
     <div class='lg:w-1/6'>
         <select name="q_publish" class="w-full bg-white border border-gray-400 rounded-l  outline-none focus:ring-2">
-            <option {% if q_publish == 'co' %} selected="selected" {% endif %} value="co">Comprar</option>
+            <option {% if q_publish == 've' %} selected="selected" {% endif %} value="ve">Comprar</option>
             <option {% if q_publish == 'ar' %} selected="selected" {% endif %} value="ar">Arrendar</option>
-            <option {% if q_publish == 'at' %} selected="selected" {% endif %} value="ar">Arrendar Temporada</option>
+            <option {% if q_publish == 'at' %} selected="selected" {% endif %} value="at">Arrendar Temporada</option>
         </select>     
     </div>
     <div class='lg:w-1/6'>
@@ -28,7 +243,7 @@
             <option {% if q_property == 'ca' %} selected="selected" {% endif %} value="ca">Casa</option>
             <option {% if q_property == 'of' %} selected="selected" {% endif %} value="of">Oficina</option>
             <option {% if q_property == 'lc' %} selected="selected" {% endif %} value="lc">Local Comercial</option>
-            <option {% if q_property == 'su' %} selected="selected" {% endif %} value="te">Sitio Urbano</option>
+            <option {% if q_property == 'su' %} selected="selected" {% endif %} value="su">Sitio Urbano</option>
             <option {% if q_property == 'pa' %} selected="selected" {% endif %} value="pa">Parcela</option>
             <option {% if q_property == 'in' %} selected="selected" {% endif %} value="in">Industrial</option>
             <option {% if q_property == 'bo' %} selected="selected" {% endif %} value="bo">Bodega</option>
@@ -37,12 +252,22 @@
             <!-- <option>Oficina</option> -->
         </select>
     </div>
-    <div class='lg:w-3/6' >
-        <input type="search" class="form-control relative flex-auto min-w-0 block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" placeholder="Barrio, Comuna o Ciudad" aria-label="Search" aria-describedby="button-addon3">
-        <div id="results"></div>
+    <div class='lg:w-3/6' x-data>
+        <input 
+          hx-post="{% url 'pages:hx_search_location' %}"
+          hx-target="#results" 
+          hx-trigger="keyup changed delay:500ms"       
+          type="text" 
+          name="search_location" 
+          x-ref="textAlgo"
+          class="form-control relative flex-auto min-w-0 block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" 
+          placeholder="Barrio, Comuna o Ciudad" 
+          aria-label="Search" 
+          aria-describedby="button-addon3">
+        <div id="results" class="absolute z-10" @click="$el.innerText=''" @click.away="$el.innerText=''"></div>
       </div>
     <div class='lg:w-1/6' >
-        <button class="w-full px-8 py-2 text-white bg-purple-500 hover:bg-purple-700 rounded-r">
+        <button  class="w-full px-8 py-2 text-white bg-purple-500 hover:bg-purple-700 rounded-r">
             Buscar
           </button>
     </div>
@@ -52,13 +277,12 @@
 <!-- Search END -->
 
 
-
-<div class="bg-[url('{% static 'img/real-estate-bg2.jpg' %}')] w-full bg-cover  ">
+<!-- <div class="bg-[url('{% static 'img/real-estate-bg2.jpg' %}')] w-full bg-cover  ">
   <div class=''> 
   </div>
-</div> 
+</div>  -->
 
-  {% comment %} <img class="w-full h-3/5 object-cover" src="{% static 'img/real-estate-bg.jpg' %}" alt=""> {% endcomment %}
+<!-- <img class="w-full h-3/5 object-cover" src="{% static 'img/real-estate-bg.jpg' %}" alt="">  -->
 
 
 
@@ -72,48 +296,48 @@
 </div>
 
   <!-- Start Category -->
-  <section class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
-      <div class="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
-        <div class="group relative">
-          <div class="relative w-full h-80 bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
-            <img src="{% static 'img/home-inside.jpg' %}" alt="Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug." class="w-full h-full object-center object-cover">
-          </div>
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="{% url 'house_list' %}">
-              <span class="absolute inset-0"></span>
-              Casas
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Consigue una Casa</p>
+<section class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
+    <div class="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
+      <div class="group relative">
+        <div class="relative w-full h-80 bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
+          <img src="{% static 'img/home-inside.jpg' %}" alt="Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug." class="w-full h-full object-center object-cover">
         </div>
-
-        <div class="group relative">
-          <div class="relative w-full h-80 bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
-            <img src="{% static 'img/apartment-inside.jpg' %}" alt="Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant." class="w-full h-full object-center object-cover">
-          </div>
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="{% url 'apartment_list' %}">
-              <span class="absolute inset-0"></span>
-              Departamentos
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Consigue un Departamento</p>
-        </div>
-
-        <div class="group relative">
-          <div class="relative w-full h-80 hover:animate-pulse bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
-            <img src="{% static 'img/office-inside.jpg' %}" alt="Collection of four insulated travel bottles on wooden shelf." class="w-full h-full object-center object-cover">
-          </div>
-          <h3 class="mt-6 text-sm text-gray-500">
-            <a href="#">
-              <span class="absolute inset-0"></span>
-              Oficinas
-            </a>
-          </h3>
-          <p class="text-base font-semibold text-gray-900">Consigue una Oficina</p>
-        </div>
+        <h3 class="mt-6 text-sm text-gray-500">
+          <a href="#">
+            <span class="absolute inset-0"></span>
+            Casas
+          </a>
+        </h3>
+        <p class="text-base font-semibold text-gray-900">Consigue una Casa</p>
       </div>
-  </section>
+
+      <div class="group relative">
+        <div class="relative w-full h-80 bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
+          <img src="{% static 'img/apartment-inside.jpg' %}" alt="Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant." class="w-full h-full object-center object-cover">
+        </div>
+        <h3 class="mt-6 text-sm text-gray-500">
+          <a href="#">
+            <span class="absolute inset-0"></span>
+            Departamentos
+          </a>
+        </h3>
+        <p class="text-base font-semibold text-gray-900">Consigue un Departamento</p>
+      </div>
+
+      <div class="group relative">
+        <div class="relative w-full h-80 hover:animate-pulse bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
+          <img src="{% static 'img/office-inside.jpg' %}" alt="Collection of four insulated travel bottles on wooden shelf." class="w-full h-full object-center object-cover">
+        </div>
+        <h3 class="mt-6 text-sm text-gray-500">
+          <a href="#">
+            <span class="absolute inset-0"></span>
+            Oficinas
+          </a>
+        </h3>
+        <p class="text-base font-semibold text-gray-900">Consigue una Oficina</p>
+      </div>
+    </div>
+</section>
   <!-- End Category -->
   
 <div class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
@@ -140,6 +364,7 @@
       </div>
   </div>
 </div>
+
 
 <!-- Our Services BEGIN -->
 <section class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
@@ -193,20 +418,43 @@
 <!-- Our Services  END -->
 
 
+<section class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
+  <div class="container px-4 py-16 mx-auto lg:flex lg:items-center lg:justify-between">
+      <h2 class="text-3xl font-semibold tracking-tight text-gray-800 xl:text-4xl ">
+          Subscribase para notificarle sobre nuevas propiedades agregadas
+      </h2>
 
+      <div class="mt-8 lg:mt-0">
+        <form action="{% url 'newsletters:create' %}" method="POST">
+          {% csrf_token %}
+          <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:-mx-2">
+          
+                <input name="email" id="id_email" type="text" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md sm:mx-2  focus:border-blue-400  focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" placeholder="Correo electronico" required>
+
+                <button class="px-4 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-700 rounded-md focus:ring focus:ring-blue-300 focus:ring-opacity-80 fo sm:mx-2 hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
+                  Subscribirse
+                </button>
+         
+          </div>
+        </form>
+          <!-- <p class="mt-3 text-sm text-gray-500 ">Attention! Offer expires in 30 days. Make sure not to miss this opportunity</p> -->
+      </div>
+  </div>
+</section>
 
 {% endblock content %}
 
 
 {% block js %}
 
-{% comment %}  CDN Jquery {% endcomment %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- CDN Jquery BEGIN  -->
+<script src="{% static 'lib/OwlCarousel2-2.3.4/jquery.min.js' %}" ></script>
+<!-- CDN Jquery END  -->
 
-{% comment %} CDN Owl carousel {% endcomment %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-{% comment %} Script Owl Carousel {% endcomment %}
+ <!-- CDN Owl carousel BEGIN  -->
+<script src="{% static 'lib/OwlCarousel2-2.3.4/owl.carousel.min.js' %}" ></script>
+ <!-- CDN Owl carousel END  -->
+<!-- Script Owl Carousel  -->
 <script>
 
   $('.owl-carousel').owlCarousel({
