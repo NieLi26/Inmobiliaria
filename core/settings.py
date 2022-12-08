@@ -167,6 +167,7 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 
 LOGIN_REDIRECT_URL = "pages:home"
 LOGOUT_REDIRECT_URL = "pages:home"
+LOGIN = "pages:home"
 
 # email config
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
