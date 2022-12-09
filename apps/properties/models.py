@@ -1,3 +1,4 @@
+import os
 from django.forms import model_to_dict
 import uuid 
 from django.db import models
@@ -118,6 +119,15 @@ class PropertyImage(TimeStampedModel):
 
         verbose_name = 'PropertyImage'
         verbose_name_plural = 'PropertyImages'
+
+    # def delete(self):
+    #     # opcion 1
+    #     image = self.image.path
+    #     if os.path.isfile(image):
+    #         os.remove(image)
+    #     #opcion 2
+    #     self.image.delete()
+    #     return super().delete()
 
     def __str__(self):
         return self.property.title

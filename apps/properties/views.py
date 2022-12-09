@@ -1,4 +1,4 @@
-import json
+import os
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy,reverse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,6 +15,9 @@ from django.template.loader import get_template
 #test decorator
 from .decorators import url_custom_list_decorator
 from .utils import url_custom_list_publish_property
+
+# remove file storage
+from django.core.files.storage import FileSystemStorage
 
 #cache
 from django.views.decorators.cache import cache_control
@@ -56,6 +59,9 @@ class PropertyDraftListView(ListView):
 # GALERY
 
 class PropertyGaleryView(View):
+
+    """ Galeria para agregar y eliminar imagenes de detalle de propiedad """
+    
     def get(self, request, *args, **kwargs):
         property = Property.objects.get(slug=kwargs['slug'], uuid=kwargs['uuid'])
         property_images = PropertyImage.objects.filter(property=property)
@@ -71,10 +77,23 @@ class PropertyGaleryView(View):
             # action = json.loads(request.body)['action']
             action = request.POST['action']
             if action == 'delete':
-           
                 id = request.POST['id']
                 property_image = PropertyImage.objects.get(id=id)
+                ## metodo para eliminar storage de media 
+
+                image = property_image.image.path
+                
+                # 1) Sirve con todas
+                fs = FileSystemStorage()
+                fs.delete(image)
                 property_image.delete()
+
+                # 2) Solo sirve con "path"
+                # if os.path.isfile(image):
+                #     os.remove(image)
+                #     property_image.delete()
+
+      
 
                 # retornar previsualización personalizada
                 property = Property.objects.get(slug=kwargs['slug'], uuid=kwargs['uuid'])
@@ -85,11 +104,10 @@ class PropertyGaleryView(View):
                     'preview_images': preview_images
                 }
             if action == 'create':
-           
-                print('entre')
                 id = request.POST.get('id')
                 imagen = request.FILES.get('imagen')
                 property_image = PropertyImage.objects.create(property_id=id, image=imagen)
+
                 # retornar previsualización personalizada
                 property = Property.objects.get(slug=kwargs['slug'], uuid=kwargs['uuid'])
                 preview_images = PropertyImage.objects.filter(property=property)
@@ -106,7 +124,7 @@ class PropertyGaleryView(View):
         except Exception as e:
             # print(str(e))
             data['error'] = str(e)
-        return JsonResponse(data, safe=False)
+        return JsonResponse(data)
 
 
 ## -------------------------------------------------------------------------------------------------------------------------
