@@ -701,7 +701,7 @@ def property_list(request, page_number, publish_type, property_type, location_sl
 def custom_list_publish_property(request, first_data, second_data):
     print('Dentre')
     response = url_custom_list_publish_property(first_data, second_data)
-   
+
     if len(response) == 2:
         qs = response[0]
         entity = response[1]

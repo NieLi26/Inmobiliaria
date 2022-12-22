@@ -11,7 +11,7 @@ from django.template.loader import get_template
 
 from .models import Property, Commune
 
-
+# tipo publicacion - tipo propiedad - locacion
 def url_custom_list(publish_type, property_type, location_slug, page_number=None): 
     property_choices = Property.PROPERTY_CHOICES
     list_property_type = [i[0] for i in property_choices]
@@ -23,10 +23,10 @@ def url_custom_list(publish_type, property_type, location_slug, page_number=None
             print('entrre en propiedad - locacion')
             return reverse('properties:custom_list_publish_property', args=[property_type, location_slug])
         elif (publish_type == 've' or publish_type == 'ar' or publish_type == 'at' or publish_type == 'pe' ) and property_type not in list_property_type and location_slug in list_location_slug:
-            print('entrre en publicación - locacion')
+            print('entrre en publicacion - locacion')
             return reverse('properties:custom_list_publish_property', args=[publish_type, location_slug])
         elif (publish_type == 've' or publish_type == 'ar' or publish_type == 'at' or publish_type == 'pe' ) and location_slug not in list_location_slug and property_type in list_property_type:
-            print('entrre en publicación - propiedad')
+            print('entrre en publicacion - propiedad')
             return reverse('properties:custom_list_publish_property', args=[publish_type, property_type])
         elif (publish_type == 've' or publish_type == 'ar' or publish_type == 'at' or publish_type == 'pe' ) and location_slug not in list_location_slug and property_type not in list_property_type:
             return redirect('properties:custom_list_publish', args=[publish_type])
@@ -40,6 +40,7 @@ def url_custom_list(publish_type, property_type, location_slug, page_number=None
     
     return False
 
+# tipo publicacion - tipo propiedad o tipo publicacion - locacion o tipo propiedad - locacion
 def url_custom_list_publish_property(first_data, second_data):
     list_property_type = [i[0] for i in Property.PROPERTY_CHOICES]
     list_location_slug = [i.location_slug for i in Commune.objects.all()]
@@ -56,7 +57,7 @@ def url_custom_list_publish_property(first_data, second_data):
             return qs, entity
 
         elif (first_data == 've' or first_data == 'ar' or first_data == 'at' or first_data == 'pe' )  and second_data not in list_property_type and second_data in list_location_slug:
-            print('entrre en publicación - locacion')
+            print('entrre en publicacion - locacion')
             qs = properties.filter(publish_type=first_data, commune__location_slug=second_data)
 
             location_slug = [i.name for i in Commune.objects.all() if second_data in i.location_slug]
@@ -73,7 +74,7 @@ def url_custom_list_publish_property(first_data, second_data):
             return qs, entity
 
         elif (first_data == 've' or first_data == 'ar' or first_data == 'at' or first_data == 'pe' ) and second_data in list_property_type and second_data not in list_location_slug:
-            print('entrre en publicación - propiedad')
+            print('entrre en publicacion - propiedad')
             qs = properties.filter(publish_type=first_data, property_type=second_data)
 
             if first_data == 've':
