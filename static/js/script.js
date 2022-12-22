@@ -28,3 +28,38 @@ function getCookie(name) {
     return cookieValue;
 }
 const csrftoken = getCookie('csrftoken');
+
+// Side Alert
+
+
+
+// const dataContainer = document.querySelector('[data-container]')
+// const dataTemplate = document.querySelector('[data-template]')
+// const dataTags = document.querySelector('[data-tags]')
+// const dataMessage = document.querySelector('[data-message]')
+
+// const createSideAlert = (message) => {
+//     // Clone tghe template
+//     element = dataTemplate.cloneNode(true)
+
+//    // Remove the data-template attribute
+//     delete element.dataset.dataTemplate
+
+//     // Set the text
+//     dataMessage.innerHTML = message.message
+//     dataTags.innerHTML = message.tags
+
+//     // Add the new element to the container
+//     dataContainer.appendChild(element)
+// }
+
+// let showAlert = false
+
+// document.body.addEventListener("messages", function(e){
+//     // alert(evt.detail);  
+//     console.log(e.detail.value[0]);
+//     e.detail.value.forEach(createSideAlert)
+//     showAlert = true
+// })
+
+  

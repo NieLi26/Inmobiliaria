@@ -32,10 +32,18 @@ class Contact(TimeStampedModel):
         return self.name
 
 class OwnerContact(TimeStampedModel):
+
+    class Subjects(models.TextChoices):
+        ASUNTO_0 = '', 'Seleccione un tipo'
+        ASUNTO_1 = 'Venta', 'Venta'
+        ASUNTO_2 = 'Arriendo', 'Arriendo'
+        ASUNTO_3 = 'Arriendo Temporada', 'Arriendo Temporada'
+        ASUNTO_4 = 'Permuta', 'Permuta'
+
     '''Model definition for OwnerContact.'''
     name = models.CharField('Nombre Completo', max_length=200)
     from_email = models.EmailField('Email', max_length=50)
-    subject = models.CharField('Asunto', max_length=100)
+    subject = models.CharField('Asunto', choices=Subjects.choices, max_length=50)
     phone = models.CharField('Télefono(opcional)', max_length=9, blank=True)
     message = models.TextField('Mensaje')
     class Meta:

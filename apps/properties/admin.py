@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import House, Property, Apartment, PropertyImage, Region, Commune, PropertyContact
+from .models import House, Property, Apartment, PropertyImage, Region, Commune, PropertyContact, Realtor
 
 # Register your models here.
 class PropertyImageInline(admin.TabularInline):
@@ -23,3 +23,4 @@ admin.site.register(Commune)
 admin.site.register(House)
 admin.site.register(Apartment)
 admin.site.register(Property, PropertyAdmin)
+admin.site.register(Realtor)

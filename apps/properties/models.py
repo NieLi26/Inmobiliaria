@@ -6,6 +6,9 @@ from core.settings import MEDIA_URL, STATIC_URL
 from django.urls import reverse
 # from django.db.models.signals import post_save
 
+# multi select
+from multiselectfield import MultiSelectField
+
 from apps.base.models import TimeStampedModel
 
 def property_directory_path(instance,filename):
@@ -13,6 +16,25 @@ def property_directory_path(instance,filename):
 
 def property_images_directory_path(instance,filename):
     return 'property_images/{0}/{1}'.format(instance.property.uuid, filename)
+
+class Realtor(TimeStampedModel):
+    '''Model definition for Realtor.'''
+    first_name = models.CharField('Nombre', max_length=200)
+    last_name = models.CharField('Apellido', max_length=200)
+    phone1 = models.CharField('Telefono 1', max_length=9)
+    phone2 = models.CharField('Telefono 2', max_length=9, blank=True)
+    email = models.EmailField('Correo', max_length=150)
+    class Meta:
+        '''Meta definition for Realtor.'''
+
+        verbose_name = 'Realtor'
+        verbose_name_plural = 'Realtors'
+
+    def __str__(self):
+        return '{0} {1}'.format(self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return reverse('properties:realtor_detail', kwargs={'pk': self.pk})
 
 class Property(TimeStampedModel):
     '''Model definition for Property.'''
@@ -45,48 +67,53 @@ class Property(TimeStampedModel):
     PUBLISH_BUY = 've'
     PUBLISH_RENT = 'ar'
     PUBLISH_RENTAL_SEASON = 'at'
+    PUBLISH_EXCHANGE = 'pe'
 
     PUBLISH_CHOICES = (
+        ('', 'Seleccione un tipo'),
         (PUBLISH_BUY, 'Venta'),
         (PUBLISH_RENT, 'Arriendo'),
         (PUBLISH_RENTAL_SEASON, 'Arriendo Temporada'),
+        (PUBLISH_EXCHANGE, 'Permuta')
     )
 
     TYPE_PRICE_CHOICES = (
+        ('', 'Seleccione un tipo'),
          ('uf', 'UF'),
-         ('clp', '$'),
+         ('usd', 'USD'),
+         ('clp', 'CLP'),
     )
 
     # General
-    property_type = models.CharField('Tipo de Propiedad*', choices=PROPERTY_CHOICES, max_length=2)
-    publish_type = models.CharField('Tipo de Operación*', choices=PUBLISH_CHOICES, max_length=2)
-    land_surface = models.PositiveIntegerField("Superficie terreno (m²)*")
-    title = models.CharField("Titulo*", max_length=150)
-    description = models.TextField("Descripción*")
-    type_price = models.CharField('Tipo Precio*', choices=TYPE_PRICE_CHOICES, max_length=3)
-    price = models.PositiveIntegerField('Precio*')
+    realtor = models.ForeignKey(Realtor, on_delete=models.CASCADE, related_name='properties')
+    property_type = models.CharField('Tipo de Propiedad', choices=PROPERTY_CHOICES, max_length=2)
+    publish_type = models.CharField('Tipo de Operación', choices=PUBLISH_CHOICES, max_length=2)
+    land_surface = models.PositiveIntegerField("Superficie terreno (m²)", default=0)
+    title = models.CharField("Titulo(hasta 100 caracteres)", max_length=100)
+    description = models.TextField("Descripción")
+    type_price = models.CharField('Tipo Moneda', choices=TYPE_PRICE_CHOICES, max_length=3)
+    price = models.PositiveIntegerField('Precio', default=0)
 
     # url externas
-    google_url = models.TextField('Google Maps', blank=True, null=True)
+    google_url = models.TextField('Ubicación en Google Maps', blank=True, null=True)
     video_url = models.URLField('Video', blank=True, null=True)
 
+    # status
     is_featured = models.BooleanField('Destacada?', default=False)
+    is_new = models.BooleanField('Nueva?', default=False)
 
-    #miniatura
-    thumbnail = models.ImageField('Imagen (Opcional)',upload_to=property_directory_path, blank=True)
+    # miniatura
+    thumbnail = models.ImageField('Imagen',upload_to=property_directory_path, blank=True)
 
     # locacion
-    region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Región*', related_name='properties')
-    commune = models.ForeignKey('Commune', on_delete=models.CASCADE, verbose_name='Comuna*', related_name='properties')
-    street_address = models.CharField("Calle*", max_length=50)
-    street_number = models.CharField("Número*", max_length=50)
+    region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Región', related_name='properties')
+    commune = models.ForeignKey('Commune', on_delete=models.CASCADE, verbose_name='Comuna', related_name='properties')
+    street_address = models.CharField("Calle", max_length=50)
+    street_number = models.PositiveIntegerField("Número")
+
     # google api for location
     longitude = models.CharField("Longitud", max_length=250, blank=True)
     latitude = models.CharField("Latitud", max_length=250, blank=True)
-
-    # contact
-    phone1 = models.CharField('Telefono 1 (Opcional)', max_length=9, blank=True)
-    phone2 = models.CharField('Telefono 2 (Opcional)', max_length=9, blank=True)
 
     # extras for urls
     slug = models.SlugField(null=False, unique=True, blank=True)
@@ -142,20 +169,70 @@ class PropertyImage(TimeStampedModel):
         item['image'] = self.get_image()
         return item
 
-
 class House(TimeStampedModel):
+
+    class Others(models.TextChoices):
+        BLINDS = 'Persianas', 'Persianas'
+        WINDOW_PROTECTIONS = 'Protecciones Ventana', 'Protecciones Ventana'
+        THERMOPANELS = 'Termopaneles', 'Termopaneles'
+
+    class Distributions(models.TextChoices):
+        BATHROOM_VISIT= 'Baño Visita', 'Baño Visita'
+        HALL = 'Hall', 'Hall'
+        GARDEN_SUEDE = 'Antejardin', 'Antejardin'
+        SERVICE_YARD = 'Patio de Servicio', 'Patio de Servicio'
+        SERVICE_ROOM = 'Estar de Servicio', 'Estar de Servicio'
+        GARDEN = 'Jardin', 'Jardin'
+        PANTRY = 'Despensa', 'Despensa'
+        LIVING_ROOM = 'Sala Estar', 'Sala Estar'
+        QUNCHO = 'Quincho', 'Quincho'
+        INDOOR_LAUNDRY = 'Lavadero Interior', 'Lavadero Interior'
+        OUTDOOR_LAUNDRY = 'Lavadero Exterior', 'Lavadero Exterior'
+        DESK = 'Escritorio', 'Escritorio'
+        MANSARD = 'Mansarda', 'Mansarda'
+        TERRACE = 'Terraza', 'Terraza'
+
+    class Services(models.TextChoices):
+        ALARM = 'Alarma', 'Alarma'
+        JACUZZI = 'Jacuzzi', 'Jacuzzi'
+        PHONE = 'Telefono', 'Telefono'
+        AUTOMATIC_IRRIGATION = 'Riego Automatico', 'Riego Automatico'
+        AUTOMATIC_DOOR = 'Porton Automatico', 'Porton Automatico'
+        SWIMMING_POOL = 'Piscina', 'Piscina'
+        TV = 'TV Cable', 'TV Cable'
+        CHIMNEY = 'Chimenea', 'Chimenea'
+        HEATING = 'Calefaccion', 'Calefaccion'
+        AIR_CONDITIONING = 'Aire Acondicionado', 'Aire Acondicionado'
+        
+    class Kitchens(models.TextChoices):
+        DAILY_DINING_ROOM = 'Comedor Diario', 'Comedor Diario'
+        EQUIPPED_KITCHEN  = 'Cocina Equipada', 'Cocina Equipada'
+        FURNISHED_KITCHEN = 'Cocina Amoblada', 'Cocina Amoblada'
+
+
     '''Model definition for House.'''
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='houses', blank=True, null=True)
-    builded_surface = models.PositiveIntegerField("Superficie construida (m²)*")
-    num_rooms = models.PositiveBigIntegerField('Dormitorios*')
-    num_bathrooms = models.PositiveIntegerField('Baños*')
-    floor_type = models.CharField("Tipo piso*", max_length=150)
-    is_furnished = models.BooleanField("Esta propiedad está amoblada*", default=False)
-    num_parkings = models.PositiveIntegerField('Estacionamientos (Opcional)', blank=True, null=True)
-    num_cellars = models.PositiveIntegerField('Bodegas (Opcional)', blank=True, null=True)
-    num_floors = models.PositiveIntegerField('Pisos (Opcional)', blank=True, null=True)
-    num_house = models.CharField("Número casa (Opcional)", max_length=20, blank=True, null=True)
-    builded_year = models.PositiveIntegerField('Año de Construcción (Opcional)', blank=True, null=True)
+    builded_surface = models.PositiveIntegerField("Superficie construida (m²)", default=0)
+    num_rooms = models.PositiveIntegerField('Dormitorios', default=0)
+    num_bathrooms = models.PositiveIntegerField('Baños', default=0)
+    num_parkings = models.PositiveIntegerField('Estacionamientos', blank=True, null=True, default=0)
+    num_cellars = models.PositiveIntegerField('Bodegas', blank=True, null=True, default=0)
+    num_floors = models.PositiveIntegerField('Pisos', blank=True, null=True, default=0)
+    num_house = models.PositiveIntegerField("Número Casa", blank=True, null=True)
+    builded_year = models.PositiveIntegerField('Año de Construcción', blank=True, null=True, default=0)
+    common_expenses = models.PositiveIntegerField('Gastos comunes', default=0)
+    # Distribución
+    distribution = MultiSelectField('Distribución', choices=Distributions.choices, max_length=250, default="")
+    # # Servicios
+    service = MultiSelectField('Servicios', choices=Services.choices, max_length=250, default="")
+    # # cocina
+    kitchen = MultiSelectField('Cocina',choices=Kitchens.choices , max_length=250, default="")
+    # # otros
+    other = MultiSelectField('Otros',choices=Others.choices , max_length=250, default="")
+
+
+
+
     class Meta:
         '''Meta definition for House.'''
 
@@ -167,19 +244,63 @@ class House(TimeStampedModel):
         return self.property.title
 
 class Apartment(TimeStampedModel):
+
+    class Others(models.TextChoices):
+        BLINDS = 'Persianas', 'Persianas'
+        WINDOW_PROTECTIONS = 'Protecciones Ventana', 'Protecciones Ventana'
+        THERMOPANELS = 'Termopaneles', 'Termopaneles'
+
+    class Distributions(models.TextChoices):
+        BATHROOM_VISIT= 'Baño Visita', 'Baño Visita'
+        HALL = 'Hall', 'Hall'
+        GARDEN_SUEDE = 'Antejardin', 'Antejardin'
+        SERVICE_YARD = 'Patio de Servicio', 'Patio de Servicio'
+        SERVICE_ROOM = 'Estar de Servicio', 'Estar de Servicio'
+        GARDEN = 'Jardin', 'Jardin'
+        PANTRY = 'Despensa', 'Despensa'
+        LIVING_ROOM = 'Sala Estar', 'Sala Estar'
+        QUNCHO = 'Quincho', 'Quincho'
+        INDOOR_LAUNDRY = 'Lavadero Interior', 'Lavadero Interior'
+        OUTDOOR_LAUNDRY = 'Lavadero Exterior', 'Lavadero Exterior'
+        DESK = 'Escritorio', 'Escritorio'
+        MANSARD = 'Mansarda', 'Mansarda'
+        TERRACE = 'Terraza', 'Terraza'
+
+    class Services(models.TextChoices):
+        ALARM = 'Alarma', 'Alarma'
+        JACUZZI = 'Jacuzzi', 'Jacuzzi'
+        PHONE = 'Telefono', 'Telefono'
+        AUTOMATIC_IRRIGATION = 'Riego Automatico', 'Riego Automatico'
+        AUTOMATIC_DOOR = 'Porton Automatico', 'Porton Automatico'
+        SWIMMING_POOL = 'Piscina', 'Piscina'
+        TV = 'TV Cable', 'TV Cable'
+        CHIMNEY = 'Chimenea', 'Chimenea'
+        HEATING = 'Calefaccion', 'Calefaccion'
+        AIR_CONDITIONING = 'Aire Acondicionado', 'Aire Acondicionado'
+        
+    class Kitchens(models.TextChoices):
+        DAILY_DINING_ROOM = 'Comedor Diario', 'Comedor Diario'
+        EQUIPPED_KITCHEN  = 'Cocina Equipada', 'Cocina Equipada'
+        FURNISHED_KITCHEN = 'Cocina Amoblada', 'Cocina Amoblada'
+
     '''Model definition for House.'''
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='apartments', blank=True, null=True)
-    builded_surface = models.PositiveIntegerField("Superficie construida (m²)*")
-    num_rooms = models.PositiveBigIntegerField('Dormitorios*')
-    num_bathrooms = models.PositiveIntegerField('Baños*')
-    floor_type = models.CharField("Tipo piso*", max_length=150)
-    is_furnished = models.BooleanField("Esta propiedad está amoblada*", default=False)
-    num_parkings = models.PositiveIntegerField('Estacionamientos (Opcional)', blank=True, null=True)
-    num_cellars = models.PositiveIntegerField('Bodegas (Opcional)', blank=True, null=True)
-    num_floors = models.PositiveIntegerField('Pisos (Opcional)', blank=True, null=True)
-    num_apartment = models.CharField("Número depto (Opcional)", max_length=20, blank=True, null=True)
-    builded_year = models.PositiveIntegerField('Año de Construcción (Opcional)', blank=True, null=True)
-    common_expenses = models.PositiveIntegerField('Gastos comunes*')
+    builded_surface = models.PositiveIntegerField("Superficie construida (m²)", default=0)
+    num_rooms = models.PositiveIntegerField('Dormitorios', default=0)
+    num_bathrooms = models.PositiveIntegerField('Baños', default=0)
+    num_parkings = models.PositiveIntegerField('Estacionamientos', blank=True, null=True, default=0)
+    num_cellars = models.PositiveIntegerField('Bodegas', blank=True, null=True, default=0)
+    num_floors = models.PositiveIntegerField('Pisos', blank=True, null=True, default=0)
+    num_apartment = models.PositiveIntegerField("Número Depto", blank=True, null=True)
+    builded_year = models.PositiveIntegerField('Año de Construcción', blank=True, null=True, default=0)
+    common_expenses = models.PositiveIntegerField('Gastos comunes', default=0)
+
+    distribution = MultiSelectField('Distribución', choices=Distributions.choices, max_length=250, default="")
+    service = MultiSelectField('Servicios', choices=Services.choices, max_length=250, default="")
+    kitchen = MultiSelectField('Cocina',choices=Kitchens.choices , max_length=250, default="")
+    other = MultiSelectField('Otros',choices=Others.choices , max_length=250, default="")
+
+
     class Meta:
         '''Meta definition for House.'''
 
@@ -221,21 +342,6 @@ class Commune(TimeStampedModel):
     def get_commune_region(self):
         return f"{self.name}, {self.region}"
 
-
-# def property_save(sender, instance, **kwargs):
-
-    # estacionamiento = Estacionamiento.objects.filter(
-    #     id=instance.estacionamiento_id)
-    # if instance.estado_plan == "iniciado":
-    #     estacionamiento.update(estado_estacionamiento="reservado")
-    # if instance.estado_plan == "terminado":
-        # estacionamiento.update(estado_estacionamiento="disponible")
-
-
-# post_save.connect(property_save, sender=Property)
-
-
-
 class PropertyContact(TimeStampedModel):
     '''Model definition for PropertyContact.'''
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='property_contacts')
@@ -251,3 +357,4 @@ class PropertyContact(TimeStampedModel):
 
     def __str__(self):
         return str(self.from_email)
+

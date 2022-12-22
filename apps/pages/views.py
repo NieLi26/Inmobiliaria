@@ -11,6 +11,8 @@ from django.core.paginator import Paginator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import TemplateView, ListView, View
 
+from render_block import render_block_to_string
+
 # email
 from django.template import loader
 from django.core.mail import EmailMultiAlternatives
@@ -19,15 +21,21 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
+
+from apps.newsletters.forms import NewsletterUserForm
 from .forms import ContactForm, OwnerContactForm
 from .models import Contact, OwnerContact
 from apps.properties.models import Commune, House, Apartment, PropertyImage, Property
 
-# Create your views here.
 
-## -------------------------------------------------------------------------------------------------------------------------
-#                                                        CBV
-## -------------------------------------------------------------------------------------------------------------------------
+def custom_alert(message, tag):
+    alert = []
+    context = {
+        'message': message,
+        'tags': tag
+    }
+    alert.append(context)
+    return alert
 
 class TestTemplateView(TemplateView):
     template_name = 'test.html'
@@ -55,33 +63,47 @@ class TestTemplateView(TemplateView):
             data['error'] = str(e)
         return JsonResponse(data)
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     property = Property.objects.get(id=1)
+    #     property_images = PropertyImage.objects.filter(property__id=1)
+    #     context['property_images'] =  property_images
+    #     context['property'] =  property
+    #     return context
+
+## GENERAL
+class DashboardTemplateView(TemplateView):
+    """ Se despligan los graficos y tablas """
+    template_name = 'pages/dashboard.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        property = Property.objects.get(id=1)
-        property_images = PropertyImage.objects.filter(property__id=1)
-        context['property_images'] =  property_images
-        context['property'] =  property
+        context['sidebar_title'] = 'Dashboard'
+        context['sidebar_subtitle'] = 'Gestiona la información de tus propiedades a traves de graficos'
         return context
-
-
-# @method_decorator(never_cache, name='dispatch')
+        
+@method_decorator(never_cache, name='dispatch')
 class HomePageView(View):
     def get(self, request, *args, **kwargs):
 
-        houses = House.objects.filter(state=True, property__publish_type='ve', property__is_featured=True)[0:20]
-        apartments = Apartment.objects.filter(state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+        houses = House.objects.filter(state=True, property__is_featured=True)[0:20]
+        apartments = Apartment.objects.filter(state=True, property__is_featured=True)[0:20]
 
         form = OwnerContactForm()
+        form_newsletters = NewsletterUserForm
         context = {
            'house_list': houses,
            'apartment_list': apartments,
            'form': form,
+           'form_newsletters': NewsletterUserForm,
         }
         return render(request, 'pages/home.html', context)
 
     def post(self, request, *args, **kwargs):
-        houses = House.objects.filter(property__state=True, property__publish_type='ve', property__is_featured=True)[0:20]
-        apartments = Apartment.objects.filter(property__state=True, property__publish_type='ve', property__is_featured=True)[0:20]
+        form = OwnerContactForm(request.POST)
+
+        houses = House.objects.filter(property__state=True, property__is_featured=True)[0:20]
+        apartments = Apartment.objects.filter(property__state=True, property__is_featured=True)[0:20]
 
         publish_type = request.POST.get('q_publish', '')
         property_type = request.POST.get('q_property', '')
@@ -91,13 +113,15 @@ class HomePageView(View):
             if search_location != '':
                 communes = Commune.objects.all()
                 location_slug = [commune for commune in communes if commune.get_commune_region() == search_location]
+          
                 if location_slug:
                     location_slug = location_slug[0]
                     location_slug= location_slug.location_slug
                 else:
+                    
                     return redirect(reverse('properties:custom_list_publish_property', kwargs={
-                        'publish_type':publish_type,
-                        'property_type':property_type,
+                        'first_data':publish_type,
+                        'second_data':property_type,
                     }))
                 # location_slug = Property.objects.filter(commune=location_slug)[0]
                 # try :
@@ -121,6 +145,24 @@ class HomePageView(View):
 
         return render(request, 'pages/home.html', context)
 
+# partials
+def hx_side_alert(request):
+    return render(request, 'components/custom_sidealert.html')
+
+def hx_search_location(request):
+    search_location = request.POST.get('search_location', '')
+    communes = Commune.objects.all()
+    results = [commune for commune in communes if search_location.lower() in commune.get_commune_region().lower()]
+
+    context = {
+        'results': results
+    }
+    html = render_block_to_string('pages/home.html', 'search_results', context)
+    return HttpResponse(html)
+
+
+
+## CONTACT
 @method_decorator(never_cache, name='dispatch')
 class ContactPageView(View):
     def get(self, request, *args, **kwargs):
@@ -132,18 +174,29 @@ class ContactPageView(View):
     
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
+        print(request.headers['User-Agent'])
         if form.is_valid():
             form.save()
-            messages.success(request, "Mensaje enviado correctamente")  
-            response = render(request, 'partials/contact_form.html', {'form': ContactForm()})
+            # messages.success(request, "Mensaje enviado correctamente")  
+            msg = custom_alert('Mensage enviado correctamente', 'success')
+            html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': ContactForm(), 'messages': msg})
+            response = HttpResponse(html)
             response['HX-Trigger'] = 'modal-contact-button'
+            # response['HX-Trigger'] = 'side-alert'
             return response
-        return render(request, 'partials/contact_form.html', {'form': form})
+        # msg = custom_alert('Mensage no enviado', 'error')
+        html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': form})
+        return HttpResponse(html)
+        # msg = custom_alert('Mensage Enviado correctamente', 'error')
+        # html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': form, 'messages': msg})
+        # response =  HttpResponse(html)
+        # response['HX-Trigger'] = 'side-alert'
+        # return response
 
 class ContactListView(View):
     def get(self, request, *args, **kwargs):
         contact_list = ContactForm.Meta.model.objects.all()
-        paginator = Paginator(contact_list, 5)
+        paginator = Paginator(contact_list, 2)
         page_number = request.GET.get('page')
         properties_data = paginator.get_page(page_number)
         context = {
@@ -153,7 +206,66 @@ class ContactListView(View):
             'sidebar_subtitle': 'Maneja la información de contactos generales!'
         }
         return render(request, 'pages/contact_list.html', context) 
+
+# partials
+def hx_contact_home_form(request):
+    form = OwnerContactForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        # messages.success(request, "Mensaje enviado correctamente")  
+        msg = custom_alert('Mensage enviado correctamente', 'success')
+        html = render_block_to_string('pages/home.html', 'contact_home_form', {'form': OwnerContactForm(), 'messages': msg})
+        response = HttpResponse(html)
+        response['HX-Trigger'] = 'modal-contact-button'
+        return response
+
+    html = render_block_to_string('pages/home.html', 'contact_home_form', {'form': form})
+    return HttpResponse(html)
+
+def hx_contact_table(request, page_number):
+    q = request.GET.get('q', '')
+
+    contact_list = Contact.objects.filter(name__icontains=q)
     
+    paginator = Paginator(contact_list, 2)
+    properties_data = paginator.get_page(page_number)
+    context = {
+        # 'contact_list': properties_data,
+        'page_obj': properties_data,
+        'q': q
+    }
+    html = render_block_to_string('pages/contact_list.html', 'table_list', context)
+    return HttpResponse(html)
+
+def hx_contact_modal(request, pk, page_number):
+    contact = Contact.objects.get(id=pk)
+    contact.state = False
+    contact.save()
+    contact_list = ContactForm.Meta.model.objects.all()
+    paginator = Paginator(contact_list, 2)
+    properties_data = paginator.get_page(page_number)
+    context = {
+        'page_obj': properties_data,
+    }
+    html = render_block_to_string('pages/contact_list.html', 'table_list', context)
+    response = HttpResponse(html)
+    response['HX-Trigger'] = 'modal-contact-button' # pasamos un encabezado para activar el trigger
+    return response
+    
+def hx_contact_notify(request):
+    qs = Contact.objects.filter(state=True)
+    if qs.exists():
+        contact_count = qs.count()
+    else:
+        contact_count = 0
+    context = {
+        'contact_count' : contact_count,
+    }
+    html = render_block_to_string('navigation/navbar.html', 'contact_notify', context)
+    return HttpResponse(html)
+    # return render(request, 'components/contact_notify.html')
+
+## OWNER CONTACT    
 class OwnerContactListView(ListView):
     model = OwnerContact
     template_name = 'pages/contact_owner_list.html'
@@ -165,10 +277,7 @@ class OwnerContactListView(ListView):
         context['sidebar_subtitle'] = 'Maneja la información de contactos de propietarios!'
         return context
 
-## -------------------------------------------------------------------------------------------------------------------------
-#                                                        HTMX PARTIALS (CBV)
-## -------------------------------------------------------------------------------------------------------------------------
-
+# partials
 class TableOwnerContactView(View):
     def get(self, request, *args, **kwargs):
         q = request.GET.get('q', '')
@@ -182,7 +291,8 @@ class TableOwnerContactView(View):
             'page_obj': properties_data,
             'q': q
         }
-        return render(request, 'partials/contact_owner_table.html', context) 
+        html = render_block_to_string('pages/contact_owner_list.html', 'table_contact_owner', context)
+        return HttpResponse(html)
 
 class ModalOwnerContactView(View):
     def get(self, request, *args, **kwargs):
@@ -195,72 +305,12 @@ class ModalOwnerContactView(View):
         context = {
             'page_obj': properties_data,
         }
-        response = render(request, 'partials/contact_owner_table.html', context)
-        # response['HX-Trigger'] = 'modal-contact-button' # pasamos un encabezado para activar el trigger
-        return response
+        html = render_block_to_string('pages/contact_owner_list.html', 'table_contact_owner', context)
+        return HttpResponse(html)
 
 
-## -------------------------------------------------------------------------------------------------------------------------
-#                                                        HTMX PARTIALS (FBV)
-## -------------------------------------------------------------------------------------------------------------------------
-
-def hx_contact_home_form(request):
-    form = OwnerContactForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        # messages.success(request, "Mensaje enviado correctamente")  
-        response = render(request, 'partials/contact_home_form.html', {'form': OwnerContactForm()})
-        response['HX-Trigger'] = 'modal-contact-button'
-        return response
-    return render(request, 'partials/contact_home_form.html', {'form': form})
-
-def hx_contact_table(request, page_number):
-    q = request.GET.get('q', '')
-
-    contact_list = Contact.objects.filter(name__icontains=q)
-    
-    paginator = Paginator(contact_list, 5)
-    properties_data = paginator.get_page(page_number)
-    context = {
-        # 'contact_list': properties_data,
-        'page_obj': properties_data,
-        'q': q
-    }
-    return render(request, 'partials/contact_table.html', context) 
-
-def hx_contact_modal(request, pk, page_number):
-    contact = Contact.objects.get(id=pk)
-    contact.state = False
-    contact.save()
-    contact_list = ContactForm.Meta.model.objects.all()
-    paginator = Paginator(contact_list, 5)
-    properties_data = paginator.get_page(page_number)
-    context = {
-        'page_obj': properties_data,
-    }
-    response = render(request, 'partials/contact_table.html', context)
-    response['HX-Trigger'] = 'modal-contact-button' # pasamos un encabezado para activar el trigger
-    return response
-
-def hx_contact_notify(request):
-    return render(request, 'partials/contact_notify.html')
-
-def hx_side_alert(request):
-    return render(request, 'partials/sidealert.html')
-
-def hx_search_location(request):
-    search_location = request.POST.get('search_location', '')
-    
-    communes = Commune.objects.all()
-
-    results = [commune for commune in communes if search_location.lower() in commune.get_commune_region().lower()]
 
 
-    # results = Commune.objects.filter(name__icontains=search_location)
-    # [x for x in Q if x.somecond()]
-    # results = Commune.objects.all().get_commune_region()
-    # print(results)
-    return render(request, 'partials/search_results.html', {'results': results})
 
 
 # def hx_message(request):

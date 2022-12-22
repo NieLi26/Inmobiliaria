@@ -39,12 +39,13 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'crispy_forms',
-    'crispy_tailwind',
     'tailwind',
     'theme',
+    'crispy_forms',
+    'crispy_tailwind',
     'django_filters',
     "django_htmx",
+    'multiselectfield',
 ]
 
 LOCAL_APPS = [
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'apps.pages.middleware.HtmxMessageMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

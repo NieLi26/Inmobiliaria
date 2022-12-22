@@ -24,10 +24,11 @@ class NewsletterUserView(View):
     def post(self, request, *args, **kwargs):
         form = NewsletterUserForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit=False)
+            form.save()
             messages.success(request, 'Su correo ha sido agregado')
         else:
-            messages.error(request, 'Hay un error en su correo electronico')
+            print(form.errors['email'])
+            messages.error(request, form.errors['email'])
         #     name = instance.name
         #     subject = instance.subject
         #     from_email = instance.from_email

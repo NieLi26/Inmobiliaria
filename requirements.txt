@@ -9,6 +9,12 @@ django-htmx==1.12.2
 # test
 Faker==15.3.4
 
+# para multi select(ya que aun no se hacerlo manual)
+django-multiselectfield==0.1.12
+
+# django fragment
+django-render-block==0.9.2
+
 # Production
 # django-environ==0.9.0
 # gunicorn==20.1.0
