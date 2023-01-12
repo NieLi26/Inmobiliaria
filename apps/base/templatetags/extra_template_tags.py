@@ -18,5 +18,5 @@ register = template.Library()
 def activate_on(context, name):
     
     if context['request'].resolver_match.url_name == name:
-        return 'font-bold'
-    return ''
+        return 'font-bold text-red-500'
+    return 'text-gray-800'

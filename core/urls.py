@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("__reload__/", include("django_browser_reload.urls")), # tailwind development
     # User management
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("apps.pages.urls", namespace="pages")),

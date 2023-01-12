@@ -1,14 +1,24 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
-{% block head %}
-<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-{% endblock head %}
 
 {% block content %}
     
-<div class="max-w-6xl mx-auto py-12 px-6 xl:px-0">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
+  <div class="text-center">
+    <h1
+      class="text-4xl tracking-tight font-bold text-gray-900 "
+    >
+      {{ title }}
+    </h1>
+    <p
+      class="mt-3 max-w-2xl mx-auto text-lg text-gray-500 sm:mt-4 font-gilroy-medium"
+    >
+      {{ subtitle }}
+    </p>
+  </div>
+</div>
+
+<div class="max-w-6xl mx-auto py-6 px-6 xl:px-0">
   <form id="form-general" action="." method="POST" enctype="multipart/form-data" autocomplete="off" class="space-y-4 mb-4" novalidate>
     {% csrf_token %}
     <!-- General -->
@@ -145,7 +155,7 @@
               <div class="mb-3">
                 {{ form.price }}
               </div>
-
+              <!-- <p> {{ form.price.help_text | safe }}</p> -->
               {% if form.errors.price %}
               {% for error in form.errors.price %}
                 <p class="text-red-500 text-xs font-bold italic">{{ error | escape  }}</p>
@@ -163,7 +173,7 @@
             <div class="mb-3">
               {{ form.is_iva }}
             </div>
-
+            
             {% if form.errors.is_iva %}
             {% for error in form.errors.is_iva %}
               <p class="text-red-500 text-xs font-bold italic">{{ error | escape  }}</p>
@@ -867,7 +877,6 @@
     </div>
   </form>
 
-
     <!-- Agente -->
     <div class="mt-5 md:mt-0 md:col-span-2 shadow-xl">
       <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Contacto</h2>
@@ -1194,134 +1203,24 @@
       </div>
     </div>
 
-    <!-- Dropzone -->
-    <div class="mt-5 md:mt-5 md:col-span-2 shadow-xl">
-      <h2 class="px-6 py-4 text-xl font-semibold bg-gray-100 rounded-t-md">Imagenes</h2>
-      
-      <div class="shadow overflow-hidden sm:rounded-md">
-        <div class="px-4 py-5 bg-white sm:p-6">
-        
-
-            <div id="my-dropzone" class="dropzone">
-              <div class="previews"></div>
-            </div>
-              
-         
-        </div>
-      </div>
-    </div>
-
     <div class="mt-5 px-4 pb-8 text-right sm:px-6">
-      <button type="submit" form="form-general" id="submit-form" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:bg-gradient-to-tl bg-gradient-to-tr from-orange-400 via-red-500 to-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2">
+      <button type="submit" form="form-general" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:bg-gradient-to-tl bg-gradient-to-tr from-orange-400 via-red-500 to-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2">
         Guardar y Continuar
       </button>
     </div>
     
 
-
 </div>
+
+<form id="form-realtor">  </form>
+
 {% endblock content %}
 
+{% block footer %}
+  
+{% endblock footer %}
 
 {% block js %}
-<script>
-    Dropzone.autoDiscover = false
-    // let currentFile = null
-  
-    var myDropzone = new Dropzone("#my-dropzone", {
-   // The configuration we've talked about above
-      dictDefaultMessage: 'Sube hasta 10 imágenes',
-      acceptedFiles: ".png,.jpg,.gif,.jpeg",
-      addRemoveLinks: true,
-      dictRemoveFile: "Eliminar Imagen",
-      maxFiles: 10,
-      maxFilesize: 2.5, 
-      autoProcessQueue: false,
-      headers: {
-        'X-CSRFToken': csrftoken
-      },
-      // uploadMultiple: true,
-      parallelUploads: 10,
-      // maxFiles: 10,
-      // addRemoveLinks: true,
-      url: location.href,
-      // acceptedFiles: ".jpg,.png,.gif",
-
-      // The setting up of the dropzone
-      init: function() {
-      var myDropzone = this;
-    
-      // First change the button to actually tell Dropzone to process the queue.
-      
-      document.querySelector("#form-general").addEventListener("submit", function(e) {
-        // Make sure that the form isn't actually being sent.
-        // e.preventDefault();
-        e.stopPropagation();
-        myDropzone.processQueue();
-      });
-    
-      // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
-      // of the sending event because uploadMultiple is set to true.
-      this.on("sendingmultiple", function() {
-        // Gets triggered when the form is actually being sent.
-        // Hide the success button or the complete form.
-      });
-      this.on("successmultiple", function(files, response) {
-        // Gets triggered when the files have successfully been sent.
-        // Redirect user or notify of success.
-      });
-      this.on("errormultiple", function(files, response) {
-        // Gets triggered when there was an error sending the files.
-        // Maybe show form again, and notify user of error
-      });
-    }
-
-
-});
-
-    
-  //   Dropzone.options.uploadForm = { // The camelized version of the ID of the form element
-  
-  //     // The configuration we've talked about above
-  //     autoProcessQueue: false,
-  //     uploadMultiple: true,
-  //     parallelUploads: 100,
-  //     maxFiles: 2,
-  //     addRemoveLinks: true,
-      
-  //     // The setting up of the dropzone
-  //     init: function() {
-  //       var myDropzone = this;
-      
-  //       // First change the button to actually tell Dropzone to process the queue.
-        
-  //       document.querySelector("#propertyForm").addEventListener("click", function(e) {
-  //         // Make sure that the form isn't actually being sent.
-  //         // e.preventDefault();
-  //         e.stopPropagation();
-  //         myDropzone.processQueue();
-  //       });
-      
-  //       // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
-  //       // of the sending event because uploadMultiple is set to true.
-  //       this.on("sendingmultiple", function() {
-  //         // Gets triggered when the form is actually being sent.
-  //         // Hide the success button or the complete form.
-  //       });
-  //       this.on("successmultiple", function(files, response) {
-  //         // Gets triggered when the files have successfully been sent.
-  //         // Redirect user or notify of success.
-  //       });
-  //       this.on("errormultiple", function(files, response) {
-  //         // Gets triggered when there was an error sending the files.
-  //         // Maybe show form again, and notify user of error
-  //       });
-  //     }
-  
-  // }
-  
-  
-  </script>
 
 <script>
   const id_price = document.querySelector('#id_price')
@@ -1351,4 +1250,5 @@
   })
 
 </script>
+  
 {% endblock js %}

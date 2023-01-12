@@ -1,4 +1,4 @@
-{% extends '_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block title %} Menu de Selección {% endblock title %}
 
@@ -6,20 +6,18 @@
 {% block content %}
 
 <div class="max-w-7xl mx-auto py-8 px-4 sm:py-10 sm:px-6 lg:px-8">
-    <div class="text-center">
         <div class="text-center">
-            <h2 class="text-4xl tracking-tight font-gilroy-bold text-gray-900 sm:text-5xl ">Creación de propiedades</h2>
-            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4 font-gilroy-medium">Selecciona y crea!</p>
+            <h2 class="text-4xl tracking-tight font-bold text-gray-900 ">Creación de propiedades</h2>
+            <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500 sm:mt-4 font-gilroy-medium">Selecciona y crea!</p>
         </div>
-    </div>
 </div>
 
 
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4  lg:py-8">
     <div class="container px-5 ">
-        <div class="flex flex-col w-full mb-20">
+        <!-- <div class="flex flex-col w-full mb-20">
           <h2 class="sm:text-3xl text-2xl font-semibold title-font text-indigo-500 ">Seleccione una categoria</h1>
-        </div>
+        </div> -->
         <div class="flex flex-wrap -m-4 text-center">
           <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
             <a href="{% url 'properties:property_create' 'ca' %}">

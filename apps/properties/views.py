@@ -1,5 +1,5 @@
 import os
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy,reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.defaultfilters import slugify
@@ -18,6 +18,9 @@ from render_block import render_block_to_string
 from .decorators import url_custom_list_decorator
 from .utils import url_custom_list_publish_property
 
+# manipulate image
+from PIL import Image
+
 # remove file storage
 from django.core.files.storage import FileSystemStorage
 
@@ -26,12 +29,162 @@ from django.views.decorators.cache import cache_control
 
 from .filters import PropertyFilter
 
-from .models import Commune, PropertyImage, Property, House,  Apartment, PropertyContact, Realtor
-from .forms import PropertyForm, HouseForm, ApartmentForm, PropertyContactForm
+from .models import Commune, PropertyImage, Property, House,  Apartment, PropertyContact, Realtor, Owner, PropertyManager
+from .forms import PropertyForm, HouseForm, ApartmentForm, PropertyContactForm, RealtorForm, OwnerForm
 
 
 
-# CRUD ARRENDATARIO 
+def property_create_test(request, property_type):
+    form = PropertyForm(request.POST or None, request.FILES or None, initial={'property_type': property_type})
+    communes = Commune.objects.all()
+    commune = ''
+    disabled = True
+
+    if request.POST.get('region'):
+        communes = communes.filter(region=request.POST.get('region'))
+        disabled = False
+
+
+    if request.POST.get('commune'):
+        commune = communes.get(id=request.POST.get('commune'))
+        disabled = False
+
+    if property_type == 'ca':
+        form_extra = HouseForm(request.POST or None)
+    elif property_type == 'de':
+        form_extra = ApartmentForm(request.POST or None)
+    else:
+        raise ViewDoesNotExist('Pagina no encontrada')
+        # raise ValueError('Catagoria no encontrada')
+
+    if request.method == 'POST':
+        if form.is_valid() and form_extra.is_valid():
+            with transaction.atomic(): # para realizar uno o mas queries seguros, sino se hace un rollback, pero con 2 o mas ses habitual usarlos, si uno falla, se anula todo
+                instance = form.save()
+                extra_instance = form_extra.save(commit=False)
+                extra_instance.property = instance
+                extra_instance.save()
+                images = request.FILES.getlist('file')
+                for i in images:
+                    print('entra al for')
+                    PropertyImage.objects.create(property=instance, image=i)
+                    print('despues de crear')
+                return redirect(reverse('properties:property_galery', args=[instance.slug, instance.uuid]))
+        # print('llego')
+        # print(request.POST)
+        # print(request.FILES)
+        # images = request.FILES.getlist('file')
+        # for i in images:
+        #     print(i)
+        #     count+=1
+        # print(count)
+            # PropertyImage.objects.create(property=instance, image=i)
+        # try:
+        # if form.is_valid() and form_extra.is_valid():
+        #     with transaction.atomic(): # para realizar uno o mas queries seguros, sino se hace un rollback, pero con 2 o mas ses habitual usarlos, si uno falla, se anula todo
+        #         instance = form.save()
+        #         extra_instance = form_extra.save(commit=False)
+        #         extra_instance.property = instance
+        #         extra_instance.save()
+        #         # images = request.FILES.getlist('more_images')
+        #         # for i in images:
+        #         #     PropertyImage.objects.create(property=instance, image=i)
+        #         return redirect(reverse('properties:property_galery', args=[instance.slug, instance.uuid]))
+        # else:
+        #     messages.error(request, form_extra.errors)
+        #     messages.error(request, form.errors)
+        # except:
+        #     pass
+            # messages.error(request, form_extra.errors)
+            # messages.error(request, form.errors)
+    context = {
+        'form': form,
+        'form_extra': form_extra,
+        'communes': communes,
+        'commune_selected': commune,
+        'disabled': disabled,
+
+        'form_realtor': RealtorForm(),
+        'form_owner': OwnerForm(),
+    }
+    return render(request, 'test2.html', context)
+
+class BaseListView(ListView):
+    paginate_by = 2
+
+## CRUD GESTIÓN
+class ManagmentListView(BaseListView):
+    model = Property
+    template_name = 'properties/managment_list.html'
+
+    def get_queryset(self):
+        return  PropertyManager.objects.filter(state=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['url_option'] = 'properties:table_managment'
+        context['sidebar_title'] = 'Gestión'
+        context['sidebar_subtitle'] = 'Registro de acciones en las propiedades!'
+        return context
+
+class ManagmentPaidView(View):
+    def get(self, request, *args, **kwargs):
+
+        property_managment = get_object_or_404(PropertyManager, id=kwargs['pk'])
+
+        if kwargs['action'] == 'paid':
+            property_managment.is_commission_paid = True
+            property_managment.save()
+
+        if kwargs['action'] == 'unpaid':
+            property_managment.is_commission_paid = False
+            property_managment.save()
+
+        property_list = PropertyManager.objects.filter(state=True)
+        paginator = Paginator(property_list, 2)
+        data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': data, 
+            'url_option': 'properties:table_managment'
+        }
+        html = render_block_to_string('properties/managment_list.html', 'table_list', context)
+        return HttpResponse(html)
+
+# partials
+class TableManagmentView(View):
+    def get(self, request, *args, **kwargs):
+        q = request.GET.get('q', '')
+        properties_managments = PropertyManager.objects.filter(state=True)
+        properties_managments = properties_managments.filter(Q(type_property__icontains=q) | Q(commission_value__icontains=q))
+        paginator = Paginator(properties_managments, 2)
+        data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'object_list': data.object_list, 
+            'page_obj': data, 
+            'q': q,
+            'url_option': 'properties:table_managment'
+        }
+        html = render_block_to_string('properties/managment_list.html', 'table_list', context)
+        return HttpResponse(html)
+
+class ManagmentDeleteView(View):
+    def delete(self, request, *args, **kwargs):
+       
+        property_managment = Property.objects.get(id=kwargs['pk'])
+        property_managment.state = False
+        property_managment.save()
+        properties_managments = property_managment.objects.filter(state=True)
+        paginator = Paginator(properties_managments, 2)
+        data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'object_list': data.object_list, 
+            'page_obj': data, 
+        }
+        html = render_block_to_string('properties/managment_list.html', 'table_list', context)
+        return HttpResponse(html)
+
+## CRUD AGENTE 
 class RealtorCreateView(CreateView):
     model = Realtor
     fields = ['first_name', 'last_name', 'phone1', 'phone2', 'email']
@@ -54,15 +207,18 @@ class RealtorUpdateView(UpdateView):
         context['title'] = 'Modificación'
         return context
 
-class RealtorListView(ListView):
+class RealtorListView(BaseListView):
     model = Realtor
     template_name = 'properties/realtor_list.html'
-    paginate_by = 1
-    context_object_name = 'object_list'
-    page_kwarg = 'page_obj'
 
     def get_queryset(self):
         return  Realtor.objects.filter(state=True)
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['sidebar_title'] = 'Agentes'
+        context['sidebar_subtitle'] = 'Maneja la información de tus agentes!'
+        return context
 
 class RealtorDetailView(DetailView):
     model = Realtor
@@ -87,11 +243,10 @@ class TableRealtorView(View):
         return HttpResponse(html)
 
 class RealtorDeleteView(View):
-    def get(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         realtor = Realtor.objects.get(id=kwargs['pk'])
         realtor.state = False
         realtor.save()
-        print('feo')
         realtors = Realtor.objects.filter(state=True)
         paginator = Paginator(realtors, 1)
         realtors_data = paginator.get_page(kwargs['page_number'])
@@ -103,12 +258,83 @@ class RealtorDeleteView(View):
         html = render_block_to_string('properties/realtor_list.html', 'table_list', context)
         return HttpResponse(html)
 
+## CRUD PROPIETARIO
+class OwnerCreateView(CreateView):
+    model = Owner
+    # fields = ['name', 'rut', 'phone1', 'phone2', 'email']
+    form_class = OwnerForm
+    template_name = 'properties/owner_create.html'
+    success_url = reverse_lazy('properties:owner_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Creación'
+        return context
+
+class OwnerUpdateView(UpdateView):
+    model = Owner
+    fields = ['name', 'rut', 'phone1', 'phone2', 'email']
+    template_name = 'properties/owner_create.html'
+    success_url = reverse_lazy('properties:owner_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Modificación'
+        return context
+
+class OwnerListView(BaseListView):
+    model = Owner
+    template_name = 'properties/owner_list.html'
+
+    def get_queryset(self):
+        return  Owner.objects.filter(state=True)
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['sidebar_title'] = 'Propietarios'
+        context['sidebar_subtitle'] = 'Maneja la información de tus propietarios!'
+        return context
+
+# partials
+
+class TableOwnerView(View):
+    def get(self, request, *args, **kwargs):
+        q = request.GET.get('q', '')
+        print('hola')
+        owners = Owner.objects.filter(state=True)
+        owners = owners.filter(Q(name__icontains=q) | Q(rut__icontains=q))
+        paginator = Paginator(owners, 1)
+        owners_data = paginator.get_page(kwargs['page_number'])
+        print(owners_data.object_list)
+        context = {
+            'object_list': owners_data.object_list, 
+            'page_obj': owners_data, 
+            'q': q
+        }
+        html = render_block_to_string('properties/owner_list.html', 'table_list', context)
+        return HttpResponse(html)
+
+class OwnerDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        owner = Owner.objects.get(id=kwargs['pk'])
+        owner.state = False
+        owner.save()
+        print('feo')
+        owners = Owner.objects.filter(state=True)
+        paginator = Paginator(owners, 1)
+        owners_data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'object_list': owners_data.object_list, 
+            'page_obj': owners_data, 
+        }
+        html = render_block_to_string('properties/owner_list.html', 'table_list', context)
+        return HttpResponse(html)
 
 ## CRUD CONTACT
-class PropertyContactListView(ListView):
+class PropertyContactListView(BaseListView):
     model = PropertyContact
     template_name = 'properties/contact_list.html'
-    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -116,22 +342,6 @@ class PropertyContactListView(ListView):
         context['sidebar_subtitle'] = 'Maneja la información de contactos de propiedades!'
         return context
 
-# testing change page_number in CBV(List View)
-# class TableContactListView(ListView):
-#     model = PropertyContact
-#     template_name = 'properties/partials/contact_table.html'
-#     paginate_by = 2
-
-#     def get_queryset(self):
-#         q = self.request.GET.get('q', '')
-#         print(q)
-#         contact_list = PropertyContact.objects.filter(name__icontains=q)
-#         return contact_list
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['paginator_class'] = self.get_paginator(self.queryset, 2)
-#         return context
 class TableContactView(View):
     def get(self, request, *args, **kwargs):
         q = request.GET.get('q', '')
@@ -161,7 +371,6 @@ class ModalContactView(View):
         }
         html = render_block_to_string('properties/contact_list.html', 'table_list', context)
         return HttpResponse(html)
-
 
 
 def contact_detail_form(request, publish_type, property_type, location_slug, slug, uuid):
@@ -196,13 +405,440 @@ def contact_detail_form(request, publish_type, property_type, location_slug, slu
     return HttpResponse(html)
 
 
-
-## CRUD PROPIEDAD DESPUBLICADA
-
-class DraftListView(ListView):
+## CRUD PROPIEDADES VENDIDAS
+class BuyListView(BaseListView):
     template_name = 'properties/property_custom.html'
-    queryset = Property.objects.filter(state=False)
-    paginate_by = 2
+    queryset = Property.objects.filter(status=Property.Status.BUY, state=True)
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['url_option'] = 'table_buy'
+        context['sidebar_title'] = 'Propiedades'
+        context['sidebar_subtitle'] = 'Maneja la información de tus propiedades vendidas!'
+        return context
+
+class BuyFeaturedView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+
+        if kwargs['action'] == 'normal':
+            property.is_featured = False
+            property.save()
+
+        if kwargs['action']  == 'featured':
+            property.is_featured = True
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.BUY, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_buy'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class BuyStatusView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+      
+        if kwargs['action'] == 'draft':
+            property.status = Property.Status.DRAFT
+            property.save()
+
+        if kwargs['action']  == 'publish':
+            property.status = Property.Status.PUBLISH
+            property.save()
+
+        if kwargs['action']  == 'buy':
+            property.status = Property.Status.BUY
+            property.save()
+
+        if kwargs['action']  == 'rent':
+            property.status = Property.Status.RENT
+            property.save()
+
+        if kwargs['action']  == 'rental_season':
+            property.status = Property.Status.RENTAL_SEASON
+            property.save()
+
+        if kwargs['action']  == 'exchange':
+            property.status = Property.Status.EXCHANGE
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.BUY, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_buy'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class BuyDeleteView(View):
+    def delete(self, request, *args, **kwargs):
+        # messages.success(request, "Propiedad eliminada correctamente")
+        property = Property.objects.get(uuid=kwargs['uuid'])
+        property.state = False
+        property.save()
+        property_list = Property.objects.filter(status=Property.Status.BUY, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_buy'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+# paginator
+class TableBuyView(View): 
+    def get(sefl, request, *args, **kwargs):
+
+        q = request.GET.get('q', '')
+        
+        property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.BUY, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'q': q,
+            'url_option': 'table_buy'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+
+## CRUD PROPIEDADES ARRENDADAS
+class RentListView(BaseListView):
+    template_name = 'properties/property_custom.html'
+    queryset = Property.objects.filter(status=Property.Status.RENT, state=True)
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['url_option'] = 'table_rent'
+        context['sidebar_title'] = 'Propiedades'
+        context['sidebar_subtitle'] = 'Maneja la información de tus propiedades arrendadas!'
+        return context
+
+class RentFeaturedView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+
+        if kwargs['action'] == 'normal':
+            property.is_featured = False
+            property.save()
+
+        if kwargs['action']  == 'featured':
+            property.is_featured = True
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.RENT, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rent'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class RentStatusView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+      
+        if kwargs['action'] == 'draft':
+            property.status = Property.Status.DRAFT
+            property.save()
+
+        if kwargs['action']  == 'publish':
+            property.status = Property.Status.PUBLISH
+            property.save()
+
+        if kwargs['action']  == 'buy':
+            property.status = Property.Status.BUY
+            property.save()
+
+        if kwargs['action']  == 'rent':
+            property.status = Property.Status.RENT
+            property.save()
+
+        if kwargs['action']  == 'rental_season':
+            property.status = Property.Status.RENTAL_SEASON
+            property.save()
+
+        if kwargs['action']  == 'exchange':
+            property.status = Property.Status.EXCHANGE
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.RENT, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rent'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class RentDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        property = Property.objects.get(uuid=kwargs['uuid'])
+        property.state = False
+        property.save()
+        # messages.success(request, "Propiedad eliminada correctamente")
+        property_list = Property.objects.filter(status=Property.Status.RENT, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rent'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+# paginator
+class TableRentView(View): 
+    def get(sefl, request, *args, **kwargs):
+
+        q = request.GET.get('q', '')
+        
+        property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.RENT, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'q': q,
+            'url_option': 'table_rent'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+
+## CRUD PROPIEDADES ARRENDADAS POR TEMPORADA
+class RentalSeasonListView(BaseListView):
+    template_name = 'properties/property_custom.html'
+    queryset = Property.objects.filter(status=Property.Status.RENTAL_SEASON, state=True)
+
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['url_option'] = 'table_rental_season'
+        context['sidebar_title'] = 'Propiedades'
+        context['sidebar_subtitle'] = 'Maneja la información de tus propiedades arrendadas por temporada!'
+        return context
+
+class RentalSeasonFeaturedView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+
+        if kwargs['action'] == 'normal':
+            property.is_featured = False
+            property.save()
+
+        if kwargs['action']  == 'featured':
+            property.is_featured = True
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.RENTAL_SEASON, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rental_season'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class RentalSeasonStatusView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+      
+        if kwargs['action'] == 'draft':
+            property.status = Property.Status.DRAFT
+            property.save()
+
+        if kwargs['action']  == 'publish':
+            property.status = Property.Status.PUBLISH
+            property.save()
+
+        if kwargs['action']  == 'buy':
+            property.status = Property.Status.BUY
+            property.save()
+
+        if kwargs['action']  == 'rent':
+            property.status = Property.Status.RENT
+            property.save()
+
+        if kwargs['action']  == 'rental_season':
+            property.status = Property.Status.RENTAL_SEASON
+            property.save()
+
+        if kwargs['action']  == 'exchange':
+            property.status = Property.Status.EXCHANGE
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.RENTAL_SEASON, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rental_season'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class RentalSeasonDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        property = Property.objects.get(uuid=kwargs['uuid'])
+        property.state = False
+        property.save()
+        # messages.success(request, "Propiedad eliminada correctamente")
+        property_list = Property.objects.filter(status=Property.Status.RENTAL_SEASON, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_rental_season'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+# paginator
+class TableRentalSeasonView(View): 
+    def get(sefl, request, *args, **kwargs):
+
+        q = request.GET.get('q', '')
+        
+        property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.RENTAL_SEASON, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'q': q,
+            'url_option': 'table_rental_season'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+## CRUD PROPIEDADES PERMUTADAS
+class ExchangeListView(BaseListView):
+    template_name = 'properties/property_custom.html'
+    queryset = Property.objects.filter(status=Property.Status.EXCHANGE, state=True)
+
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['url_option'] = 'table_exchange'
+        context['sidebar_title'] = 'Propiedades'
+        context['sidebar_subtitle'] = 'Maneja la información de tus propiedades permutadas!'
+        return context
+
+class ExchangeFeaturedView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+
+        if kwargs['action'] == 'normal':
+            property.is_featured = False
+            property.save()
+
+        if kwargs['action']  == 'featured':
+            property.is_featured = True
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.EXCHANGE, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_exchange'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class ExchangeStatusView(View):
+    def get(self, request, *args, **kwargs):
+        property = get_object_or_404(Property, id=kwargs['pk'])
+      
+        if kwargs['action'] == 'draft':
+            property.status = Property.Status.DRAFT
+            property.save()
+
+        if kwargs['action']  == 'publish':
+            property.status = Property.Status.PUBLISH
+            property.save()
+
+        if kwargs['action']  == 'buy':
+            property.status = Property.Status.BUY
+            property.save()
+
+        if kwargs['action']  == 'rent':
+            property.status = Property.Status.RENT
+            property.save()
+
+        if kwargs['action']  == 'rental_season':
+            property.status = Property.Status.RENTAL_SEASON
+            property.save()
+
+        if kwargs['action']  == 'exchange':
+            property.status = Property.Status.EXCHANGE
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.EXCHANGE, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_exchange'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+class ExchangeDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        property = Property.objects.get(uuid=kwargs['uuid'])
+        property.state = False
+        property.save()
+        # messages.success(request, "Propiedad eliminada correctamente")
+        property_list = Property.objects.filter(status=Property.Status.EXCHANGE, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+
+        context = {
+            'page_obj': properties_data, 
+            'url_option': 'table_exchange'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+# paginator
+class TableExchangeView(View): 
+    def get(sefl, request, *args, **kwargs):
+
+        q = request.GET.get('q', '')
+        
+        property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.EXCHANGE, state=True)
+        paginator = Paginator(property_list, 2)
+        properties_data = paginator.get_page(kwargs['page_number'])
+        context = {
+            'page_obj': properties_data, 
+            'q': q,
+            'url_option': 'table_exchange'
+        }
+        html = render_block_to_string('properties/property_custom.html', 'table_list', context)
+        return HttpResponse(html)
+
+## CRUD PROPIEDAD DESPUBLICADAS
+
+class DraftListView(BaseListView):
+    template_name = 'properties/property_custom.html'
+    queryset = Property.objects.filter(status=Property.Status.DRAFT, state=True)
+
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -211,6 +847,7 @@ class DraftListView(ListView):
         context['sidebar_subtitle'] = 'Maneja la información de tus propiedades despublicadas!'
         return context
 
+# partials
 class DraftFeaturedView(View):
     def get(self, request, *args, **kwargs):
         property = get_object_or_404(Property, id=kwargs['pk'])
@@ -223,7 +860,7 @@ class DraftFeaturedView(View):
             property.is_featured = True
             property.save()
 
-        property_list = Property.objects.filter(state=False)
+        property_list = Property.objects.filter(status=Property.Status.DRAFT, state=True)
         paginator = Paginator(property_list, 2)
         properties_data = paginator.get_page(kwargs['page_number'])
         context = {
@@ -239,14 +876,30 @@ class DraftStatusView(View):
         property = get_object_or_404(Property, id=kwargs['pk'])
       
         if kwargs['action'] == 'draft':
-            property.state = False
+            property.status = Property.Status.DRAFT
             property.save()
 
         if kwargs['action']  == 'publish':
-            property.state = True
+            property.status = Property.Status.PUBLISH
             property.save()
 
-        property_list = Property.objects.filter(state=False)
+        if kwargs['action']  == 'buy':
+            property.status = Property.Status.BUY
+            property.save()
+
+        if kwargs['action']  == 'rent':
+            property.status = Property.Status.RENT
+            property.save()
+
+        if kwargs['action']  == 'rental_season':
+            property.status = Property.Status.RENTAL_SEASON
+            property.save()
+
+        if kwargs['action']  == 'exchange':
+            property.status = Property.Status.EXCHANGE
+            property.save()
+
+        property_list = Property.objects.filter(status=Property.Status.DRAFT, state=True)
         paginator = Paginator(property_list, 2)
         properties_data = paginator.get_page(kwargs['page_number'])
         context = {
@@ -259,9 +912,11 @@ class DraftStatusView(View):
 
 class DraftDeleteView(View):
     def get(self, request, *args, **kwargs):
-        Property.objects.get(uuid=kwargs['uuid']).delete()
+        property = Property.objects.get(uuid=kwargs['uuid'])
+        property.state = False
+        property.save()
         # messages.success(request, "Propiedad eliminada correctamente")
-        property_list = Property.objects.filter(state=False)
+        property_list = Property.objects.filter(status=Property.Status.DRAFT, state=True)
         paginator = Paginator(property_list, 2)
         properties_data = paginator.get_page(kwargs['page_number'])
 
@@ -276,9 +931,10 @@ class DraftDeleteView(View):
 # paginator
 class TableDraftView(View): # probe como pasar template y context con httpresponse en vez de render
     def get(sefl, request, *args, **kwargs):
+
         q = request.GET.get('q', '')
         
-        property_list = Property.objects.filter(commune_id__name__icontains=q, state=False)
+        property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.DRAFT, state=True)
         paginator = Paginator(property_list, 2)
         properties_data = paginator.get_page(kwargs['page_number'])
         # template = get_template('properties/partials/property_table.html')
@@ -296,7 +952,7 @@ class TableDraftView(View): # probe como pasar template y context con httprespon
 ## CRUD PROPIEDADES PUBLICADAS
 
 def property_publish_list(request):
-        properties = Property.objects.filter(state=True)
+        properties = Property.objects.filter(status=Property.Status.PUBLISH, state=True)
         paginator = Paginator(properties, 2)
         page_number = request.GET.get('page')
         properties_data = paginator.get_page(page_number)
@@ -308,7 +964,7 @@ def property_publish_list(request):
         }
         return render(request, 'properties/property_custom.html', context)
 
-# partials
+
 def publish_featured(request, pk, action, page_number):
     property = get_object_or_404(Property, id=pk)
 
@@ -320,7 +976,7 @@ def publish_featured(request, pk, action, page_number):
         property.is_featured = True
         property.save()
 
-    property_list = Property.objects.filter(state=True)
+    property_list = Property.objects.filter(status=Property.Status.PUBLISH, state=True)
     paginator = Paginator(property_list, 2)
     properties_data = paginator.get_page(page_number)
     context = {
@@ -333,16 +989,32 @@ def publish_featured(request, pk, action, page_number):
 
 def publish_status(request, pk, action, page_number):
     property = get_object_or_404(Property, id=pk)
-   
+ 
     if action == 'draft':
-        property.state = False
+        property.status = Property.Status.DRAFT
         property.save()
 
     if action == 'publish':
-        property.state = True
+        property.status = Property.Status.PUBLISH
         property.save()
 
-    property_list = Property.objects.filter(state=True)
+    if action == 'buy':
+        property.status = Property.Status.BUY
+        property.save()
+
+    if action == 'rent':
+        property.status = Property.Status.RENT
+        property.save()
+
+    if action == 'rental_season':
+        property.status = Property.Status.RENTAL_SEASON
+        property.save()
+
+    if action == 'exchange':
+        property.status = Property.Status.EXCHANGE
+        property.save()
+
+    property_list = Property.objects.filter(status=Property.Status.PUBLISH, state=True)
     paginator = Paginator(property_list, 2)
     properties_data = paginator.get_page(page_number)
 
@@ -355,9 +1027,12 @@ def publish_status(request, pk, action, page_number):
  
 
 def publish_delete(request, uuid, page_number):
-    Property.objects.get(uuid=uuid).delete()
+    property = Property.objects.get(uuid=uuid)
+    property.state = False
+    property.save()
+    # Property.objects.get(uuid=uuid).delete()
     # messages.success(request, "Propiedad eliminada correctamente")
-    property_list = Property.objects.filter(state=True)
+    property_list = Property.objects.filter(status=Property.Status.PUBLISH, state=True)
     paginator = Paginator(property_list, 2)
     properties_data = paginator.get_page(page_number)
 
@@ -368,11 +1043,11 @@ def publish_delete(request, uuid, page_number):
     html = render_block_to_string('properties/property_custom.html', 'table_list', context)
     return HttpResponse(html)
 
-
+# paginator
 def table_publish(request, page_number):
     q = request.GET.get('q', '')
 
-    property_list = Property.objects.filter(commune_id__name__icontains=q, state=True)
+    property_list = Property.objects.filter(commune_id__name__icontains=q, status=Property.Status.PUBLISH, state=True)
     paginator = Paginator(property_list, 2)
     properties_data = paginator.get_page(page_number)
     context = {
@@ -384,7 +1059,7 @@ def table_publish(request, page_number):
     return HttpResponse(html)
 
 
-## GENERAL PUBLICACIONES
+## GENERAL PROPIEDADES
 
 class PropertyGaleryView(View):
 
@@ -409,7 +1084,7 @@ class PropertyGaleryView(View):
                 property_image = PropertyImage.objects.get(id=id)
                 ## metodo para eliminar archivos 
 
-                # image = str(property_image.image
+                # image = str(property_image.image)
                 # image = property_image.image.url
                 image = property_image.image.path
                 
@@ -427,32 +1102,65 @@ class PropertyGaleryView(View):
                 property = Property.objects.get(slug=kwargs['slug'], uuid=kwargs['uuid'])
                 preview_images = PropertyImage.objects.filter(property=property)
                 preview_images = [i.toJSON() for i in preview_images]
+   
+                data['preview_images'] = preview_images
 
-                data = {
-                    'preview_images': preview_images
-                }
-            if action == 'create':
-                id = request.POST.get('id')
-                imagen = request.FILES.get('imagen')
-                property_image = PropertyImage.objects.create(property_id=id, image=imagen)
-
-                # retornar previsualización personalizada
+            elif action == 'create':
                 property = Property.objects.get(slug=kwargs['slug'], uuid=kwargs['uuid'])
                 preview_images = PropertyImage.objects.filter(property=property)
-                preview_images = [i.toJSON() for i in preview_images]
-             
-                data = {
-                    'id': property_image.id,
-                    'property_image': str(property_image.image),
-                    'preview_images': preview_images
-                }
+                if preview_images.count() <= 10:
+                    id = request.POST.get('id')
+                    imagen = request.FILES.get('imagen')
+
+                    try:
+                        Image.open(imagen)
+                    except Exception as e:
+                        data['error'] = str(e)
+                        print(str(e))
+                        return JsonResponse(data, status=400)
+                    else:
+                        property_image = PropertyImage.objects.create(property_id=id, image=imagen)
+                        # retornar previsualización personalizada
+                        preview_images = PropertyImage.objects.filter(property=property)
+                        preview_images = [i.toJSON() for i in preview_images]
+
+
+                        data['id'] = property_image.id
+                        data['property_image'] = str(property_image.image)
+                        data['preview_images'] = preview_images
+
+                else:
+                    data['error'] = 'se alcanzo el limite de imagenes para subir'
+                    return JsonResponse(data, status=400)
                 # return redirect('properties:property_detail', args=[property.publish_type, property.property_type, property.commune.location_slug, property.slug, property.uuid])
             else:
                 data['error']  = 'Ha ocurrido un error'
+                return JsonResponse(data, status=400)
         except Exception as e:
-            # print(str(e))
+            print(str(e))
             data['error'] = str(e)
-        return JsonResponse(data)
+            # return JsonResponse(data, status=400)
+        return JsonResponse(data, status=200)
+
+class PropertySuccessDetailView(DetailView):
+    model = Property
+    template_name = 'properties/property_success.html'
+
+    def get_queryset(self):
+        queryset = self.model.objects.filter(slug=self.kwargs['slug'], uuid=self.kwargs['uuid'])
+        return queryset.filter()
+
+    def post(self, request, slug, uuid):
+        action = request.POST.get('action')
+        if action == 'publish':
+            property = get_object_or_404(self.model, slug=slug, uuid=uuid)
+            property.status = self.model.Status.PUBLISH
+            property.save()
+            return HttpResponseRedirect(reverse('properties:property_detail', args=[property.publish_type, property.property_type, property.commune.location_slug, property.slug, property.uuid]))
+        context = {
+            'object': self.get_object()
+        }
+        return render(request, 'properties/property_success.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def property_detail(request, publish_type, property_type, location_slug, slug, uuid):
@@ -471,37 +1179,37 @@ def property_detail(request, publish_type, property_type, location_slug, slug, u
             'property_image': property.properties.all(),
             'form': form,
             'wa_message': property.title,
-            'wa_number': '56968462368'
+            'wa_number': '56950092733'
         }
         return render(request, 'properties/property_detail.html', context)
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def property_create(request, property_type):
-    form = PropertyForm(request.POST or None, request.FILES or None, initial={'property_type': property_type})
+    # form = PropertyForm(request.POST or None, request.FILES or None, initial={'property_type': property_type})
+    form = PropertyForm(request.POST or None, request.FILES or None, property_type=property_type) # forma mas robusta pasandosela al form y ahi asignandola
+
     communes = Commune.objects.all()
     commune = ''
-    disabled = True
+    disabled = 'disabled'
 
     if request.POST.get('region'):
         communes = communes.filter(region=request.POST.get('region'))
-        disabled = False
+        disabled = ''
 
 
     if request.POST.get('commune'):
         commune = communes.get(id=request.POST.get('commune'))
-        disabled = False
+        disabled = ''
 
     if property_type == 'ca':
         form_extra = HouseForm(request.POST or None)
     elif property_type == 'de':
         form_extra = ApartmentForm(request.POST or None)
     else:
-        raise ViewDoesNotExist('Pagina no encontrada')
-        # raise ValueError('Catagoria no encontrada')
+        return redirect('home')
 
 
-    if request.method == 'POST':
-        # try:
+    try:
         if form.is_valid() and form_extra.is_valid():
             with transaction.atomic(): # para realizar uno o mas queries seguros, sino se hace un rollback, pero con 2 o mas ses habitual usarlos, si uno falla, se anula todo
                 instance = form.save()
@@ -513,23 +1221,30 @@ def property_create(request, property_type):
                 #     PropertyImage.objects.create(property=instance, image=i)
                 return redirect(reverse('properties:property_galery', args=[instance.slug, instance.uuid]))
         # else:
-        #     messages.error(request, form_extra.errors)
-        #     messages.error(request, form.errors)
-        # except:
-        #     pass
+            # form.initial['commune'] = commune
+            # print(form.errors['region'])
             # messages.error(request, form_extra.errors)
             # messages.error(request, form.errors)
+    except Exception as e:
+        print(str(e))
+        pass
+
     context = {
         'form': form,
         'form_extra': form_extra,
         'communes': communes,
         'commune_selected': commune,
         'disabled': disabled,
+        
+        'form_realtor': RealtorForm(),
+        'form_owner': OwnerForm(),
+
+        'title': 'Creación de Propiedad',
+        'subtitle': 'Maneje la creación de sus propiedades',
     }
-    return render(request, 'properties/property_create.html', context)
+    return render(request, 'properties/property_form.html', context)
 
-
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def property_update(request, slug, uuid):
     property = Property.objects.get(uuid=uuid, slug=slug)
     form = PropertyForm(request.POST or None, request.FILES or None, instance=property)
@@ -546,43 +1261,48 @@ def property_update(request, slug, uuid):
     else:
         commune = property.commune
 
+
     if property.property_type == 'ca':
         house = House.objects.get(property=property)
         form_extra = HouseForm(request.POST or None, instance=house)
     elif property.property_type == 'de':
         apartment = Apartment.objects.get(property=property.id)
         form_extra = ApartmentForm(request.POST or None, instance=apartment)
-    # else:
-    #     raise ViewDoesNotExist('Pagina no encontrada')
-    #     # raise ValueError('Catagoria no encontrada')
+    else:
+        return redirect('home')
 
-    if request.method == 'POST':
-        # try:
-        if form.is_valid and form_extra.is_valid:
+
+    try:
+        if form.is_valid() and form_extra.is_valid():
             with transaction.atomic(): # para realizar uno o mas queries seguros, sino se hace un rollback, pero con 2 o mas ses habitual usarlos, si uno falla, se anula todo
                 instance = form.save()
                 extra_instance = form_extra.save(commit=False)
                 extra_instance.property = instance
                 extra_instance.save()
-                return redirect('properties:property_galery', property.slug, property.uuid)
+                return redirect('properties:property_galery', instance.slug, instance.uuid)
             # else:
             #     messages.error(request, 'ha ocurrido un error')
-        # except:
-        #     # pass
-        #     messages.error(request, form.errors)
+    except Exception as e:
+        print(str(e))
+        pass
+
     context = {
         'form': form,
         'form_extra': form_extra,
         'communes': communes,
         'commune_selected': commune,
-        # 'disabled': False,
+
+        'form_realtor': RealtorForm(),
+        'form_owner': OwnerForm(),
+
+        'title': 'Modificación de Propiedad',
+        'subtitle': 'Maneje la modificación de sus propiedades',
     }
-    return render(request, 'properties/property_create.html', context)
+    return render(request, 'properties/property_form.html', context)
 
 
 def property_select(request):
     return render(request, 'properties/property_select.html')
-
 
 def commune_select(request):
 
@@ -591,16 +1311,71 @@ def commune_select(request):
     communes = Commune.objects.all()
     if region != '':
         communes = communes.filter(region=region)
-        disabled = False
+        disabled = ''
     else:
-        disabled = True
+        disabled = 'disabled'
+
     context = {
         'communes': communes,
         'disabled': disabled,
     }
-    html = render_block_to_string('properties/property_create.html', 'commune', context)
+    html = render_block_to_string('properties/property_form.html', 'commune', context)
     return HttpResponse(html)
-    # return render(request, 'properties/property_create.html', context)
+
+def realtor_create(request):
+    print(request.POST )
+    form = RealtorForm(request.POST or None)
+    context = {
+        'form_realtor': form,
+    }
+    if form.is_valid():
+        form.save()
+        context['form_realtor'] = RealtorForm()
+        html = render_block_to_string('properties/property_form.html', 'realtor', context)
+        response = HttpResponse(html)
+        response['HX-Trigger'] = 'realtor_select'
+        return response
+        
+    html = render_block_to_string('properties/property_form.html', 'realtor', context)
+    return HttpResponse(html)
+
+def realtor_select(request):
+    realtors = Realtor.objects.last()
+    form = PropertyForm(initial={'realtor': realtors.id})
+
+    context = {
+        'form': form,
+    }
+    html = render_block_to_string('properties/property_form.html', 'realtors', context)
+    return HttpResponse(html)
+
+def owner_create(request):
+    print(request.POST )
+    form = OwnerForm(request.POST or None)
+    context = {
+        'form_owner': form,
+    }
+    if form.is_valid():
+        form.save()
+        context['form_owner'] = OwnerForm()
+        html = render_block_to_string('properties/property_form.html', 'owner', context)
+        response = HttpResponse(html)
+        response['HX-Trigger'] = 'owner_select'
+        return response
+        
+    html = render_block_to_string('properties/property_form.html', 'owner', context)
+    return HttpResponse(html)
+
+def owner_select(request):
+    owners = Owner.objects.last()
+    form = PropertyForm(initial={'owner': owners.id})
+
+    context = {
+        'form': form,
+    }
+    html = render_block_to_string('properties/property_form.html', 'owners', context)
+    return HttpResponse(html)
+
 
 
 

@@ -23,7 +23,7 @@ class PropertyFilter(django_filters.FilterSet):
         model = Property     
         fields = {
                 'price': ['lte', 'gte'], 
-                'land_surface': ['lte', 'gte'],
+                # 'land_surface': ['lte', 'gte'],
                 'type_price': ['exact'],
             }
 

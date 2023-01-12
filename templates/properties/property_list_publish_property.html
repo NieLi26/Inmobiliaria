@@ -1,4 +1,4 @@
-{% extends '_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load humanize %}
@@ -149,20 +149,6 @@
                   </div>
                 </div>
     
-                <div class="border-b border-gray-200 px-4 py-6">
-                  <div class="space-y-4">
-                      <label for="sortBy" class="font-semibold text-gray-900">Superficie Terreno</label>
-                        <div class="flex items-center justify-between">
-                          <div class="w-2/5">
-                            <input type="number" name="land_surface__gte" id="" placeholder="desde" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                          </div>
-    
-                          <div class="w-2/5">
-                            <input type="number" name="land_surface__lte" id="" placeholder="hasta" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                          </div>
-                        </div>
-                  </div>
-                </div>
                 
                 <!-- <div x-data="{ open: false }" class="border-b border-gray-200 px-4 py-6">
                     <h3 class="-my-3 flow-root">
@@ -267,7 +253,7 @@
                   <button 
                   @click= 'open = false'
                 type="submit" 
-                class=" float-right rounded-full inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-gilroy-medium text-white bg-indigo-700 hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                class=" float-right rounded-full inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-gilroy-medium text-white bg-[#11104d] hover:bg-gradient-to-tr hover:from-orange-400 hover:via-red-500 hover:to-red-600 hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                 Buscar
                 </button>
                 </div>
@@ -465,20 +451,6 @@
               </div>
             </div>
 
-            <div class="border-b border-gray-200 py-6">
-              <div class="space-y-4">
-                  <label for="sortBy" class="font-semibold text-gray-900">Superficie Terreno</label>
-                    <div class="flex items-center justify-between">
-                      <div class="w-2/5">
-                        <input type="number" name="land_surface__gte" id="" placeholder="desde" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                      </div>
-
-                      <div class="w-2/5">
-                        <input type="number" name="land_surface__lte" id="" placeholder="hasta" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                      </div>
-                    </div>
-              </div>
-            </div>
             
               <!-- <div x-data="{ open: false }" class="border-b border-gray-200 py-6">
                 <h3 class="-my-3 flow-root">
@@ -573,7 +545,7 @@
               <div class="py-6">
                 <button 
               type="submit" 
-              class=" float-right rounded-full inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-gilroy-medium text-white bg-indigo-700 hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+              class=" float-right rounded-full inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-gilroy-medium text-white bg-[#11104d] hover:bg-gradient-to-tr hover:from-orange-400 hover:via-red-500 hover:to-red-600 hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
               Buscar
               </button>
               </div>
@@ -594,11 +566,11 @@
                         <a href="{{ property.get_absolute_url }}">
                         <div class="w-full rounded-lg shadow-lg overflow-hidden flex flex-col sm:flex-row  p-4 bg-gray-500">
                             <div class="w-full sm:w-1/2 md:w-2/6">
-                                {% if property.thumbnail %}
-                                <img class="object-cover w-full h-full" src="{{ property.thumbnail.url }}" alt="photo">
-                                {% else %}
-                                <img class="object-cover w-full h-full" src="{% static 'img/474x296.png' %}" alt="photo">
-                                {% endif %}
+                              {% if property.properties.first %}
+                              <img class="object-cover w-full h-full" src="{{ property.properties.first.image.url }}" alt="photo">
+                              {% else %}
+                              <img class="object-cover w-full h-full" src="{% static 'img/474x296.png' %}" alt="photo">
+                              {% endif %}
                             </div>
                             <div class="w-full sm:w-1/2 md:w-4/6 text-left p-3 sm:p-6 sm:space-y-2 bg-white">
                                 <div class="flex items-center">

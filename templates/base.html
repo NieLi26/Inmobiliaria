@@ -1,7 +1,7 @@
 {% load static %}
 {% load tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -30,11 +30,11 @@
 
     <div class="wrapper overflow-hidden">
       {% block navbar %}
-        {% include 'navigation/navbar.html' %}
+        {% include 'navigation/_navbar.html' %}
       {% endblock navbar %}
 
 
-
+      
     {% include 'components/custom_sidealert.html' %}
 
         
@@ -43,15 +43,18 @@
     </div>
     
     {% block footer %}
-      {% include 'navigation/footer.html' %}
+      {% include 'navigation/_footer.html' %}
     {% endblock footer %}
 
     <!-- JS -->
     <script src="{% static 'js/script.js' %}"></script>
     <!-- HTMX -->
     <script defer src="{% static 'lib/htmx-1.8/htmx.min.js' %}"></script>
-    <!-- Alpine -->
+    <!-- Alpine Mask -->
+    <script defer src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine Core-->
     <script defer src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js"></script>
+    <!-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
     <!-- HTMX -->
     <!-- <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>  -->
 

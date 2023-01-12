@@ -8,13 +8,14 @@
         <div class="flex items-center">
           <div class="flex-shrink-0">
             <a href="{% url 'pages:home' %}">
-              <img src="{% static 'img/logo.ico' %}" alt="" class="h-8 w-8">
+              <img src="{% static 'img/logo_propiedades_web.png' %}" alt="" class="w-56 h-auto" >
+              <!-- <img src="{% static 'img/logo_propiedades_web.png' %}" alt=""  style="max-width: 220px; height: auto;"> -->
             </a>
           </div>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4 ">
                             
-                <a href="{% url 'pages:home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  px-3 py-2 rounded-md text-sm  {% activate_on 'home' %} " x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
+                <a href="{% url 'pages:home' %}" class="hover:text-red-500 px-3 py-2 rounded-md text-sm  {% activate_on 'home' %} " x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
 
                 <div x-cloak  x-data="{ open: false }" @keyup.escape="open = false" class="relative inline-block text-left z-10">
                
@@ -37,7 +38,7 @@
                   </div>
                 </div>
                                             
-                <a href="{% url 'pages:contact_create' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white px-3 py-2 rounded-md text-sm {% activate_on 'contact_create' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
+                <a href="{% url 'pages:contact_create' %}" class="hover:text-red-500 px-3 py-2 rounded-md text-sm {% activate_on 'contact_create' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
               
             </div>
           </div>
@@ -102,18 +103,16 @@
                 </div>
                 
                   <div x-show="open"  @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" x-ref="menu-items" x-description="Dropdown menu, show/hide based on menu state."  role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()" @keydown.tab="open = false" @keydown.enter.prevent="open = false; focusButton()" @keyup.space.prevent="open = false; focusButton()" style="display: none;">
-                                      
-                      <a href="{% url 'pages:contact_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300 {% activate_on 'contact_list' %}" >Contactos</a>
-                      
-                      <a href="{% url 'pages:dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300 {% activate_on 'dashboard' %}"  role="menuitem" tabindex="-1" id="user-menu-item-1"  @click="open = false; focusButton()">Configuración</a>
+                                                          
+                      <a href="{% url 'pages:dashboard' %}" class="block px-4 py-2 text-sm hover:text-red-500 {% activate_on 'dashboard' %}"  role="menuitem" tabindex="-1" id="user-menu-item-1"  @click="open = false; focusButton()">Configuración</a>
                     
-                      <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:text-white hover:bg-gray-300"  role="menuitem" tabindex="-1" id="user-menu-item-2"  @click="open = false; focusButton()">Cerrar Sesión</a>
+                      <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm hover:text-red-500"  role="menuitem" tabindex="-1" id="user-menu-item-2"  @click="open = false; focusButton()">Cerrar Sesión</a>
                     
                   </div>
                 
               </div>
             {% else %}
-              <a href="{% url 'login' %}" class="text-white bg-purple-700 hover:bg-purple-600  px-3 py-2 rounded-full shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400">
+              <a href="{% url 'login' %}" class="text-white hover:bg-gradient-to-tl bg-gradient-to-tr from-orange-400 via-red-500 to-red-600   px-3 py-2 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400">
                   Iniciar sesión
               </a>
             {% endif %}
@@ -121,7 +120,7 @@
         </div>
         <div class="-mr-2 flex md:hidden">
           <!-- Mobile menu button -->
-          <button type="button" class="bg-purple-700 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-500 focus:ring-white" aria-controls="mobile-menu" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
+          <button type="button" class="inline-flex items-center justify-center p-2  text-white bg-[#11104d] rounded-md md:rounded-none md:rounded-r-md  hover:bg-gradient-to-tr hover:from-orange-400 hover:via-red-500 hover:to-red-600" aria-controls="mobile-menu" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
             <span class="sr-only">Open main menu</span>
             <svg x-state:on="Menu open" x-state:off="Menu closed" class="h-6 w-6 block" :class="{ 'hidden': open, 'block': !(open) }" x-description="Heroicon name: outline/menu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -138,7 +137,7 @@
     <div x-description="Mobile menu, show/hide based on menu state." class="md:hidden" id="mobile-menu" x-show="open" style="display: none;">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 
-          <a href="{% url 'pages:home' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium {% activate_on 'home' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Inicio</a>
+          <a href="{% url 'pages:home' %}" class="hover:text-red-500 px-3 py-2 rounded-md text-sm  {% activate_on 'home' %}">Inicio</a>
         
           <div x-data="{ open: false }">
             <!-- <button  @click="open = !open" class="flex items-center text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium transition-all" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">
@@ -165,10 +164,7 @@
               </div>
             </div>
           </div>
-        
-          
-          <a href="{% url 'pages:contact_create' %}" class="text-gray-800 hover:bg-gray-300 hover:text-white  block px-3 py-2 rounded-md text-base font-medium {% activate_on 'contact_create' %}" x-state-description="undefined: &quot;bg-gray-900 text-white&quot;, undefined: &quot;text-gray-300 hover:bg-gray-700 hover:text-white&quot;">Contacto</a>
-                
+                        
       </div>
       
       <div class="pt-4 pb-3 border-t border-gray-700">
@@ -207,14 +203,14 @@
         <div class="mt-3 px-2 space-y-1">
           
           
-            <a href="{% url 'pages:dashboard' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-gray-700 {% activate_on 'dashboard' %}">Configuración</a>
+            <a href="{% url 'pages:dashboard' %}" class="block px-4 py-2 text-sm hover:text-red-500 {% activate_on 'dashboard' %}">Configuración</a>
           
-            <a href="{% url 'logout' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-gray-700">Cerrar Sesión</a>
+            <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm hover:text-red-500">Cerrar Sesión</a>
           
         </div>
         {% else %}
         <div class="mt-3 px-2 space-y-1">          
-          <a href="{% url 'login' %}" class="text-white bg-purple-700 hover:bg-purple-600  px-3 py-2 rounded-full text-sm font-semibold ">
+          <a href="{% url 'login' %}" class="text-white hover:bg-gradient-to-tl bg-gradient-to-tr from-orange-400 via-red-500 to-red-600   px-3 py-2 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400">
             Iniciar sesión
         </a>
         </div>

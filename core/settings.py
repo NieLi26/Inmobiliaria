@@ -41,6 +41,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'tailwind',
     'theme',
+    'django_browser_reload', # tailwind development
     'crispy_forms',
     'crispy_tailwind',
     'django_filters',
@@ -60,11 +61,9 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Whitenoise
-     'whitenoise.middleware.WhiteNoiseMiddleware',
-    # htmx
-    "django_htmx.middleware.HtmxMiddleware",
-
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Whitenoise
+    "django_htmx.middleware.HtmxMiddleware", # htmx
+    "django_browser_reload.middleware.BrowserReloadMiddleware", # tailwind development
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,7 +130,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 

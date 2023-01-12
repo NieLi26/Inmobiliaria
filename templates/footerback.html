@@ -1,16 +1,16 @@
 {% load static %}
 <footer id='footer' aria-labelledby="footer-heading">
   <h2 id="footer-heading" class="sr-only">Footer</h2>
-  <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:py-10 lg:px-8">
+  <div class="mx-auto px-4 py-4 sm:px-6 lg:py-10 lg:px-8 bg-black">
     <div class="xl:grid xl:grid-cols-3 xl:gap-8 py-8">
       <div class="space-y-8 xl:col-span-1">
         <img
-          class="h-10 inline-flex dark:hidden"
-          src="{% static 'img/logo.ico' %}"
+          class="w-56 h-auto inline-flex dark:hidden"
+          src="{% static 'img/logo_propiedades_web.png' %}"
           alt="Uridium"
         /><img
-          class="h-10 hidden dark:inline-flex"
-          src="{% static 'img/logo.ico' %}"
+          class="w-56 h-auto  hidden dark:inline-flex"
+          src="{% static 'img/logo_propiedades_web.png' %}"
           alt="Uridium"
         />
         <p class="font-gilroy-medium text-gray-500 text-base">
@@ -164,7 +164,8 @@
     <div class="border-t border-gray-200 pt-8 mt-4">
       <p class="text-base text-gray-400 xl:text-center font-gilroy-medium">
         <!-- © {{ current_year }} Inmobiliaria, Inc. All rights reserved. -->
-        © {% now 'Y' %} Inmobiliaria, Inc. All rights reserved.
+        Desarrollado por Macroactiva SpA - Copyright © {% now 'Y' %} PropiedadesWeb.cl
+        <!-- © {% now 'Y' %} Inmobiliaria, Inc. All rights reserved. -->
         <!-- © <script> document.write(new Date().getFullYear()) </script> Inmobiliaria, Inc. All rights reserved. -->
       </p>
     </div>

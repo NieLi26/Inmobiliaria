@@ -451,148 +451,6 @@
                             </td>
                             <td class="py-3 px-6 text-center">
                                 <div class="flex item-center justify-between">
-                                    <!-- {% if property.status == 'dr' %}
-                                        <div x-data="{ open: false }">
-
-                                            <div @click="open = true" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            </div>
-                                            
-                                            <div x-show="open"  x-cloak class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                            
-                                                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-                                                
-                                                <div class="fixed z-10 inset-0 overflow-y-auto">
-                                                    <div class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
-                                            
-                                                    <div @click.away="open = false" class="shadow-lg rounded-2xl p-4 bg-white  w-64 m-auto">
-                                                        <div class="w-full h-full text-center">
-                                                            <div class="flex h-full flex-col justify-between">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="mt-4 w-12 h-12 m-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                            </svg>
-                                                                <p class="text-gray-800  text-xl font-bold mt-4">
-                                                                    Publicar Propiedad
-                                                                </p>
-                                                                <p class="text-gray-600  text-xs py-2 px-6">
-                                                                    Estas seguro de publicar esta propiedad ?
-                                                                </p>
-                                                                <div class="flex items-center justify-around w-full mt-8">
-                                                                    <button 
-                                                                    hx-get="{% url 'properties:draft_status' property.id 'publish' page_obj.number %}"
-                                        
-                                                                    hx-target="#custom_table"
-                                                                    @click="open = false" type="submit" class="py-2 px-4 mx-3 bg-green-600 hover:bg-green-700 focus:ring-green-500 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
-                                                                        Publicar
-                                                                    </button>
-                                        
-                                                                    <button @click="open = false" type="button" class="py-2 px-4  bg-white hover:bg-gray-100 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-indigo-500 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
-                                                                    Cancelar
-                                                                </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% elif property.status == 'pu' %}
-                                        <div x-data="{ open: false }">
-                                        <div
-                                        @click="open = true"
-                                        class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110"
-                                        >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                        >
-                                            <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                            />
-                                        </svg>
-                                        </div>
-                                    
-                                        <div
-                                        x-show="open"
-                                        x-cloak
-                                        class="relative z-10"
-                                        aria-labelledby="modal-title"
-                                        role="dialog"
-                                        aria-modal="true"
-                                        >
-                                        <div
-                                            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                                        ></div>
-                                    
-                                        <div class="fixed z-10 inset-0 overflow-y-auto">
-                                            <div
-                                            class="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0"
-                                            >
-                                            <div
-                                                @click.away="open = false"
-                                                class="shadow-lg rounded-2xl p-4 bg-white w-64 m-auto"
-                                            >
-                                                <div class="w-full h-full text-center">
-                                                <div class="flex h-full flex-col justify-between">
-                                                    <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    class="mt-4 w-12 h-12 m-auto text-yellow-500"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                                    />
-                                                    </svg>
-                                                    <p class="text-gray-800 text-xl font-bold mt-4">
-                                                    Despublicar Propiedad
-                                                    </p>
-                                                    <p class="text-gray-600 text-xs py-2 px-6">
-                                                    Estas seguro de despublicar esta propiedad ?
-                                                    </p>
-                                                    <div class="flex items-center justify-around w-full mt-8">
-                                                    <button
-                                                        hx-get="{% url 'properties:publish_status' property.id 'draft' page_obj.number %}"
-                                                        hx-target="#custom_table"
-                                                        @click="open = false"
-                                                        type="submit"
-                                                        class="py-2 px-4 mx-3 bg-yellow-300 hover:bg-yellow-400 focus:ring-yellow-500 focus:ring-offset-yellow-200 text-black w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
-                                                    >
-                                                        Despublicar
-                                                    </button>
-                                    
-                                                    <button
-                                                        @click="open = false"
-                                                        type="button"
-                                                        class="py-2 px-4 bg-white hover:bg-gray-100 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-indigo-500 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
-                                                    >
-                                                        Cancelar
-                                                    </button>
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        </div>
-                                    {% endif %} -->
                                     
                                     {% if property.is_featured == False %}
                                         <div x-data="{ open: false }">
@@ -766,13 +624,13 @@
                                                                         hx-delete="{% url 'properties:publish_delete' property.uuid page_obj.number %}"
                                                                     {% elif url_option == 'table_draft' %}
                                                                         hx-delete="{% url 'properties:draft_delete' property.uuid page_obj.number %}"
-                                                                    {% elif url_option == 'table_buy' %}
+                                                                    {% elif url_option == 'buy' %}
                                                                         hx-delete="{% url 'properties:buy_delete' property.uuid page_obj.number %}"
-                                                                    {% elif url_option == 'table_rent' %}
+                                                                    {% elif url_option == 'rent' %}
                                                                         hx-delete="{% url 'properties:rent_delete' property.uuid page_obj.number %}"
-                                                                    {% elif url_option == 'table_rental_season' %}
+                                                                    {% elif url_option == 'rental_season' %}
                                                                         hx-delete="{% url 'properties:rental_season_delete' property.uuid page_obj.number %}"
-                                                                    {% elif url_option == 'table_exchange' %}
+                                                                    {% elif url_option == 'exchange' %}
                                                                         hx-delete="{% url 'properties:exchange_delete' property.uuid page_obj.number %}"
                                                                     {% endif %}
                                                                     hx-target="#custom_table"
@@ -835,19 +693,7 @@
                 
                                 {% if page_obj.number|add:"-1" >= 1 %}
                                     <button 
-                                    {% if url_option == 'table_publish' %}
-                                        hx-get="{% url 'properties:table_publish'  page_obj.number|add:"-1" %}" 
-                                    {% elif url_option == 'table_draft' %}
-                                        hx-get="{% url 'properties:table_draft'  page_obj.number|add:"-1" %}" 
-                                    {% elif url_option == 'table_buy' %}
-                                        hx-get="{% url 'properties:table_buy'  page_obj.number|add:"-1"  %}" 
-                                    {% elif url_option == 'table_rent' %}
-                                        hx-get="{% url 'properties:table_rent'  page_obj.number|add:"-1"  %}" 
-                                    {% elif url_option == 'table_rental_season' %}
-                                        hx-get="{% url 'properties:table_rental_season'  page_obj.number|add:"-1"  %}" 
-                                    {% elif url_option == 'table_exchange' %}
-                                        hx-get="{% url 'properties:table_exchange'  page_obj.number|add:"-1"  %}" 
-                                    {% endif %}
+                                        hx-get="{% url url_option  page_obj.number|add:"-1" %}" 
                                         hx-vals='{"q": "{{q}}"}'
                                         hx-target='#custom_table'
                                         hx-swap="innerHTML"
@@ -856,19 +702,7 @@
                                 {% endif %}
                 
                                 <button 
-                                {% if url_option == 'table_publish' %}
-                                    hx-get="{% url 'properties:table_publish'  page_obj.number %}" 
-                                {% elif url_option == 'table_draft' %}
-                                    hx-get="{% url 'properties:table_draft'  page_obj.number %}" 
-                                {% elif url_option == 'table_buy' %}
-                                    hx-get="{% url 'properties:table_buy'  page_obj.number  %}" 
-                                {% elif url_option == 'table_rent' %}
-                                    hx-get="{% url 'properties:table_rent'  page_obj.number  %}" 
-                                {% elif url_option == 'table_rental_season' %}
-                                    hx-get="{% url 'properties:table_rental_season'  page_obj.number  %}" 
-                                {% elif url_option == 'table_exchange' %}
-                                    hx-get="{% url 'properties:table_exchange'  page_obj.number  %}" 
-                                {% endif %}
+                                    hx-get="{% url url_option   page_obj.number %}" 
                                     hx-vals='{"q": "{{q}}"}'
                                     hx-target='#custom_table'
                                     hx-swap="innerHTML"
@@ -878,19 +712,7 @@
                 
                                 {% if page_obj.number|add:"1" in page_obj.paginator.page_range %}
                                     <button
-                                    {% if url_option == 'table_publish' %}
-                                        hx-get="{% url 'properties:table_publish'  page_obj.number|add:"1" %}" 
-                                    {% elif url_option == 'table_draft' %}
-                                        hx-get="{% url 'properties:table_draft'  page_obj.number|add:"1" %}" 
-                                    {% elif url_option == 'table_buy' %}
-                                        hx-get="{% url 'properties:table_buy'  page_obj.number|add:"1"  %}" 
-                                    {% elif url_option == 'table_rent' %}
-                                        hx-get="{% url 'properties:table_rent'  page_obj.number|add:"1"  %}" 
-                                    {% elif url_option == 'table_rental_season' %}
-                                        hx-get="{% url 'properties:table_rental_season'  page_obj.number|add:"1"  %}" 
-                                    {% elif url_option == 'table_exchange' %}
-                                        hx-get="{% url 'properties:table_exchange'  page_obj.number|add:"1"  %}
-                                    {% endif %}
+                                        hx-get="{% url url_option   page_obj.number|add:"1" %}" 
                                         hx-vals='{"q": "{{q}}"}'
                                         hx-target='#custom_table'
                                         hx-swap="innerHTML" 
@@ -902,19 +724,7 @@
                                 {% for i in page_obj.paginator.page_range %}
                                     {% if i == page_obj.number %}
                                         <button
-                                        {% if url_option == 'table_publish' %}
-                                            hx-get="{% url 'properties:table_publish'  i %}" 
-                                        {% elif url_option == 'table_draft' %}
-                                            hx-get="{% url 'properties:table_draft'  i %}" 
-                                        {% elif url_option == 'table_buy' %}
-                                            hx-get="{% url 'properties:table_buy'  i  %}" 
-                                        {% elif url_option == 'table_rent' %}
-                                            hx-get="{% url 'properties:table_rent'  i  %}" 
-                                        {% elif url_option == 'table_rental_season' %}
-                                            hx-get="{% url 'properties:table_rental_season'  i  %}" 
-                                        {% elif url_option == 'table_exchange' %}
-                                            hx-get="{% url 'properties:table_exchange'  i  %}
-                                        {% endif %}
+                                            hx-get="{% url url_option   i %}" 
                                             hx-vals='{"q": "{{q}}"}'
                                             hx-target='#custom_table'
                                             hx-swap="innerHTML" 
@@ -924,17 +734,7 @@
                                         <button
                                         {% if url_option == 'table_publish' %}
                                             hx-get="{% url 'properties:table_publish'  i %}" 
-                                        {% elif url_option == 'table_draft' %}
-                                            hx-get="{% url 'properties:table_draft'  i %}" 
-                                        {% elif url_option == 'table_buy' %}
-                                            hx-get="{% url 'properties:table_buy'  i  %}" 
-                                        {% elif url_option == 'table_rent' %}
-                                            hx-get="{% url 'properties:table_rent'  i  %}" 
-                                        {% elif url_option == 'table_rental_season' %}
-                                            hx-get="{% url 'properties:table_rental_season'  i  %}" 
-                                        {% elif url_option == 'table_exchange' %}
-                                            hx-get="{% url 'properties:table_exchange'  i  %}
-                                        {% endif %}
+
                                             hx-vals='{"q": "{{q}}"}'
                                             hx-target='#custom_table'
                                             hx-swap="innerHTML" 

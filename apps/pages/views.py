@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import TemplateView, ListView, View
 
+
 from render_block import render_block_to_string
 
 # email
@@ -51,6 +52,8 @@ class TestTemplateView(TemplateView):
     def post(self, request, *args, **kwargs):
         data = dict()
         try:
+            print(request.POST)
+            print(request.FILES)
             action = json.loads(request.body)['action']
             if action == 'delete':
                 imagen = json.loads(request.body)['imagen']
@@ -86,8 +89,8 @@ class DashboardTemplateView(TemplateView):
 class HomePageView(View):
     def get(self, request, *args, **kwargs):
 
-        houses = House.objects.filter(state=True, property__is_featured=True)[0:20]
-        apartments = Apartment.objects.filter(state=True, property__is_featured=True)[0:20]
+        houses = House.objects.filter(property__state=True, property__is_featured=True, property__status=Property.Status.PUBLISH)[0:20]
+        apartments = Apartment.objects.filter(property__state=True, property__is_featured=True, property__status=Property.Status.PUBLISH)[0:20]
 
         form = OwnerContactForm()
         form_newsletters = NewsletterUserForm
@@ -174,24 +177,21 @@ class ContactPageView(View):
     
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
-        print(request.headers['User-Agent'])
+        context = {
+            'form': form
+        }
         if form.is_valid():
             form.save()
-            # messages.success(request, "Mensaje enviado correctamente")  
-            msg = custom_alert('Mensage enviado correctamente', 'success')
-            html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': ContactForm(), 'messages': msg})
+            context['form'] = ContactForm()
+            context['success'] = {'Mensaje enviado correctamente'}
+            html = render_block_to_string('pages/contact_create.html', 'contact_form', context)
             response = HttpResponse(html)
             response['HX-Trigger'] = 'modal-contact-button'
-            # response['HX-Trigger'] = 'side-alert'
             return response
-        # msg = custom_alert('Mensage no enviado', 'error')
-        html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': form})
+
+        # context['errors'] = form.errors.values()
+        html = render_block_to_string('pages/contact_create.html', 'contact_form', context)
         return HttpResponse(html)
-        # msg = custom_alert('Mensage Enviado correctamente', 'error')
-        # html = render_block_to_string('pages/contact_create.html', 'contact_form', {'form': form, 'messages': msg})
-        # response =  HttpResponse(html)
-        # response['HX-Trigger'] = 'side-alert'
-        # return response
 
 class ContactListView(View):
     def get(self, request, *args, **kwargs):
